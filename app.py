@@ -27,7 +27,6 @@ PASSWORDS = {
     "Reproductoras": "repro2026",
     "Incubación": "incuba2026",
     "Producción Pollo Carne": "pollo2026",
-    "Cerdos": "cerdos2026",
     "Gerencia": "gerencia2026"
 }
 
@@ -86,7 +85,6 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-    # Botón con el mismo estilo de los módulos principales
     if st.button("INGRESAR", use_container_width=True, help="Solo personal autorizado"):
         st.session_state.area = "Gerencia"
         st.session_state.auth = False
@@ -97,7 +95,7 @@ with st.sidebar:
 
 
 # =========================================================
-# ESTILOS
+# ESTILOS (TU BLOQUE ORIGINAL)
 # =========================================================
 st.markdown(f"""
 <style>
@@ -163,8 +161,6 @@ html, body {{
 .card img {{
     border-radius: 18px;
     transition: transform 0.4s ease;
-    height: 200px; /* Forzamos altura para evitar desniveles */
-    object-fit: cover;
 }}
 .card:hover img {{
     transform: scale(1.04);
@@ -193,7 +189,7 @@ div.stButton > button:hover {{
 
 
 # =========================================================
-# FUNCIONES
+# FUNCIONES (SIN CAMBIOS)
 # =========================================================
 def report_card(titulo, desc, img_relative_path):
     img_path = ASSETS_DIR / img_relative_path
@@ -272,7 +268,7 @@ if st.session_state.area is None:
     with col3:
         report_card("Producción Pollo Carne",
                     "Monitoreo de engorde",
-                    "Pollo Carne.jpg")
+                    "PolloCarne.jpg")
         if st.button("Ingresar", key="pollo", use_container_width=True):
             st.session_state.area = "Producción Pollo Carne"
             st.session_state.auth = False
@@ -329,39 +325,35 @@ else:
             st.subheader("Producción Aves")
             col1, col2, col3 = st.columns(3)
             with col1:
-                report_card("Reproductoras", "Reporte General", "Reproductoras.jpg")
+                report_card("Reproductoras", "Gestión de lotes y huevos", "Reproductoras.jpg")
                 open_panel_button("https://app.powerbi.com", "g1")
             with col2:
-                report_card("Incubación", "Reporte General", "Incubacion.jpg")
+                report_card("Incubación", "Control de nacimientos", "Incubacion.jpg")
                 open_panel_button("https://app.powerbi.com", "g2")
             with col3:
-                report_card("Pollo Carne", "Reporte General", "PolloCarne.jpg")
+                report_card("Producción Pollo Carne", "Monitoreo de engorde", "PolloCarne.jpg")
                 open_panel_button("https://app.powerbi.com", "g3")
             
-            st.divider()
-            st.subheader("Otras Unidades")
-            col_g4, col_g5, _ = st.columns(3)
-            with col_g4:
-                report_card("Cerdos", "Unidad Porcinos", "Cerdos.jpg")
-                open_panel_button("https://app.powerbi.com", "g4")
+            # Segunda fila alineada a la izquierda (3 columnas)
+            # col_g4, col_g5, _ = st.columns(3) # Si añades más áreas como Cerdos, irían aquí.
 
         # ================= AREAS NORMALES =================
         elif area == "Reproductoras":
             col1, col2, col3 = st.columns(3)
             with col1:
-                report_card("Dashboard Repro", "Control de lotes", "Reproductoras.jpg")
+                report_card("Reproductoras", "Gestión de lotes y huevos", "Reproductoras.jpg")
                 open_panel_button("https://app.powerbi.com", "r1")
 
         elif area == "Incubación":
             col1, col2, col3 = st.columns(3)
-            with col2:
-                report_card("Dashboard Incubación", "Nacimientos", "Incubacion.jpg")
+            with col1: # Manteniendo alineación a la izquierda
+                report_card("Incubación", "Control de nacimientos", "Incubacion.jpg")
                 open_panel_button("https://app.powerbi.com", "i1")
 
         elif area == "Producción Pollo Carne":
             col1, col2, col3 = st.columns(3)
-            with col3:
-                report_card("Dashboard Pollo", "Engorde", "PolloCarne.jpg")
+            with col1: # Manteniendo alineación a la izquierda
+                report_card("Producción Pollo Carne", "Monitoreo de engorde", "PolloCarne.jpg")
                 open_panel_button("https://app.powerbi.com", "p1")
 
 # =========================================================
