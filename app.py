@@ -195,12 +195,12 @@ if st.session_state.area is None:
             st.session_state.area = "Cerdos"; st.rerun()
 
     with col2:
-        report_card("Incubación", "Control de nacimientos", "Incuba_Main.jpg")
+        report_card("Incubación", "Control de nacimientos", "Incubacion.jpg")
         if st.button("Ingresar", key="btn_inc"):
             st.session_state.area = "Incubación"; st.rerun()
 
     with col3:
-        report_card("Producción Pollo Carne", "Monitoreo de engorde", "Pollo_Main.jpg")
+        report_card("Producción Pollo Carne", "Monitoreo de engorde", "Pollo Carne.jpg")
         if st.button("Ingresar", key="btn_pollo"):
             st.session_state.area = "Producción Pollo Carne"; st.rerun()
 
