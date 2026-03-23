@@ -10,7 +10,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Colores de Producción según manual de marca
+# Colores extraídos de tu manual de Producción
 COLOR1 = "#8dbf44"
 COLOR2 = "#0d897d"
 COLOR3 = "#129b94"
@@ -96,7 +96,7 @@ with st.sidebar:
 
 
 # =========================================================
-# ESTILOS (TU MISMO BLOQUE ORIGINAL ADAPTADO)
+# ESTILOS (COPIA FIEL DE TU EJEMPLO)
 # =========================================================
 st.markdown(f"""
 <style>
@@ -162,9 +162,6 @@ html, body {{
 .card img {{
     border-radius: 18px;
     transition: transform 0.4s ease;
-    /* Forzamos altura para evitar desniveles */
-    height: 220px !important;
-    object-fit: cover !important;
 }}
 .card:hover img {{
     transform: scale(1.04);
@@ -193,7 +190,7 @@ div.stButton > button:hover {{
 
 
 # =========================================================
-# FUNCIONES (SIN CAMBIOS)
+# FUNCIONES (SIN CAMBIOS RESPECTO A TU EJEMPLO)
 # =========================================================
 def report_card(titulo, desc, img_relative_path):
     img_path = ASSETS_DIR / img_relative_path
@@ -206,7 +203,7 @@ def report_card(titulo, desc, img_relative_path):
     elif fallback.exists():
         st.image(fallback.read_bytes(), use_container_width=True)
     else:
-        st.image("https://via.placeholder.com/800x400.png?text=Produccion+Don+Pollo",
+        st.image("https://via.placeholder.com/800x400.png?text=Imagen+no+disponible",
                  use_container_width=True)
 
     st.markdown(f"""
@@ -241,12 +238,12 @@ def open_panel_button(url, key):
 
 
 # =========================================================
-# PORTAL DE PRODUCCIÓN
+# PORTAL PRODUCCIÓN
 # =========================================================
 if st.session_state.area is None:
 
     st.markdown('<div class="main-title">Ecosistema Digital • Producción</div>', unsafe_allow_html=True)
-    st.markdown('<div class="subtitle">Seleccione el área de interés técnica</div>', unsafe_allow_html=True)
+    st.markdown('<div class="subtitle">Seleccione el área de interés</div>', unsafe_allow_html=True)
     st.markdown('<div class="title-accent"></div>', unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns(3)
@@ -293,7 +290,7 @@ else:
                     {area}
                 </div>
                 <div style="text-align:center;color:#6b7280;margin-bottom:20px;">
-                    Ingrese su contraseña departamental
+                    Ingrese su contraseña
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -323,52 +320,52 @@ else:
 
         st.divider()
 
-        # ================= GERENCIA VE TODO =================
+        # ================= GERENCIA PRODUCCIÓN =================
         if area == "Gerencia":
 
             st.subheader("Reproductoras")
             col1, col2, col3 = st.columns(3)
             with col1:
-                report_card("Producción de Huevo", "Rendimiento por lote", "Reproductoras.jpg")
-                open_panel_button("https://app.powerbi.com", "gr1")
+                report_card("Producción Semanal", "Resumen de postura", "Reproductoras.jpg")
+                open_panel_button("https://app.powerbi.com", "g1")
             with col2:
-                report_card("Sanidad Repro", "Seguimiento de vacunas", "Sanidad.jpg")
-                open_panel_button("https://app.powerbi.com", "gr2")
+                report_card("Sanidad", "Programas de vacunación", "Sanidad.jpg")
+                open_panel_button("https://app.powerbi.com", "g2")
             with col3:
-                report_card("Inventario Alimento", "Consumo en granja", "Alimento.jpg")
-                open_panel_button("https://app.powerbi.com", "gr3")
+                report_card("Alimentación", "Eficiencia de consumo", "Alimento.jpg")
+                open_panel_button("https://app.powerbi.com", "g3")
             
             st.divider()
             st.subheader("Incubación")
-            col1, col2, col3 = st.columns(3)
-            with col1:
+            col_g4, col_g5, _ = st.columns(3)
+            with col_g4:
                 report_card("Nacimientos", "Efectividad de planta", "Incubacion.jpg")
-                open_panel_button("https://app.powerbi.com", "gi1")
-            with col2:
-                report_card("Carga y Transferencia", "Programación semanal", "Maquinas.jpg")
-                open_panel_button("https://app.powerbi.com", "gi2")
+                open_panel_button("https://app.powerbi.com", "g4")
+            with col_g5:
+                report_card("Calidad de Pollito", "Descarte y primera", "Pollitos.jpg")
+                open_panel_button("https://app.powerbi.com", "g5")
 
             st.divider()
             st.subheader("Pollo Carne")
-            col1, col2, col3 = st.columns(3)
-            with col1:
+            col_g6, col_g7, _ = st.columns(3)
+            with col_g6:
                 report_card("Engorde", "Conversión alimenticia", "PolloCarne.jpg")
-                open_panel_button("https://app.powerbi.com", "gp1")
-            with col2:
-                report_card("Mortalidad", "Análisis de bajas", "Bajas.jpg")
-                open_panel_button("https://app.powerbi.com", "gp2")
+                open_panel_button("https://app.powerbi.com", "g6")
+            with col_g7:
+                report_card("Saca", "Programación de salida", "Saca.jpg")
+                open_panel_button("https://app.powerbi.com", "g7")
 
         # ================= AREAS NORMALES =================
         elif area == "Reproductoras":
             col1, col2, col3 = st.columns(3)
             with col1:
-                report_card("Producción de Huevo", "Rendimiento por lote", "Reproductoras.jpg")
+                report_card("Producción Semanal", "Resumen de postura", "Reproductoras.jpg")
                 open_panel_button("https://app.powerbi.com", "r1")
             with col2:
-                report_card("Sanidad Repro", "Seguimiento de vacunas", "Sanidad.jpg")
+                report_card("Sanidad", "Programas de vacunación", "Sanidad.jpg")
                 open_panel_button("https://app.powerbi.com", "r2")
             with col3:
-                report_card("Alimentación", "Consumo en granja", "Alimento.jpg")
+                report_card("Alimentación", "Eficiencia de consumo", "Alimento.jpg")
                 open_panel_button("https://app.powerbi.com", "r3")
 
         elif area == "Incubación":
@@ -377,7 +374,7 @@ else:
                 report_card("Nacimientos", "Efectividad de planta", "Incubacion.jpg")
                 open_panel_button("https://app.powerbi.com", "i1")
             with col2:
-                report_card("Maquinaria", "Humedad y Temperatura", "Maquinas.jpg")
+                report_card("Cargas", "Control de máquinas", "Maquinas.jpg")
                 open_panel_button("https://app.powerbi.com", "i2")
 
         elif area == "Producción Pollo Carne":
