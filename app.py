@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent
 ASSETS_DIR = BASE_DIR / "assets"
 
 # =========================================================
-# PASSWORDS
+# PASSWORDS (Ajustadas a Producción)
 # =========================================================
 PASSWORDS = {
     "Reproductoras": "repro2026",
@@ -96,7 +96,7 @@ with st.sidebar:
 
 
 # =========================================================
-# ESTILOS (COPIA FIEL DE TU EJEMPLO)
+# ESTILOS (TU BLOQUE ORIGINAL + FIX DE TAMAÑO)
 # =========================================================
 st.markdown(f"""
 <style>
@@ -159,17 +159,19 @@ html, body {{
     transform: translateY(-8px);
     box-shadow: 0 25px 55px rgba(0,0,0,0.18);
 }}
-.card img {{
-    border-radius: 18px;
-    transition: transform 0.4s ease;
+
+/* ESTO ASEGURA QUE TODAS LAS FOTOS MIDAN LO MISMO */
+.stImage > img {{
+    height: 220px !important;
+    object-fit: cover !important;
+    border-radius: 18px 18px 0 0;
 }}
-.card:hover img {{
-    transform: scale(1.04);
-}}
+
 .card-title {{
     padding: 15px;
     font-weight: 700;
     font-size: 1.1rem;
+    min-height: 100px; /* Alinea los textos */
 }}
 div.stButton > button {{
     width: 100%;
@@ -190,7 +192,7 @@ div.stButton > button:hover {{
 
 
 # =========================================================
-# FUNCIONES (SIN CAMBIOS RESPECTO A TU EJEMPLO)
+# FUNCIONES
 # =========================================================
 def report_card(titulo, desc, img_relative_path):
     img_path = ASSETS_DIR / img_relative_path
@@ -203,7 +205,7 @@ def report_card(titulo, desc, img_relative_path):
     elif fallback.exists():
         st.image(fallback.read_bytes(), use_container_width=True)
     else:
-        st.image("https://via.placeholder.com/800x400.png?text=Imagen+no+disponible",
+        st.image("https://via.placeholder.com/800x450.png?text=Don+Pollo+Produccion",
                  use_container_width=True)
 
     st.markdown(f"""
@@ -323,68 +325,46 @@ else:
         # ================= GERENCIA PRODUCCIÓN =================
         if area == "Gerencia":
 
-            st.subheader("Reproductoras")
+            st.subheader("Reproductoras e Incubación")
             col1, col2, col3 = st.columns(3)
             with col1:
-                report_card("Producción Semanal", "Resumen de postura", "Reproductoras.jpg")
+                report_card("Postura Semanal", "Resumen de lotes", "Reproductoras.jpg")
                 open_panel_button("https://app.powerbi.com", "g1")
             with col2:
-                report_card("Sanidad", "Programas de vacunación", "Sanidad.jpg")
+                report_card("Nacimientos", "Efectividad de planta", "Incubacion.jpg")
                 open_panel_button("https://app.powerbi.com", "g2")
             with col3:
-                report_card("Alimentación", "Eficiencia de consumo", "Alimento.jpg")
+                report_card("Calidad de Pollito", "Seguimiento de planta", "Pollito.jpg")
                 open_panel_button("https://app.powerbi.com", "g3")
             
             st.divider()
-            st.subheader("Incubación")
+            st.subheader("Producción Carne")
             col_g4, col_g5, _ = st.columns(3)
             with col_g4:
-                report_card("Nacimientos", "Efectividad de planta", "Incubacion.jpg")
+                report_card("Engorde", "Conversión alimenticia", "PolloCarne.jpg")
                 open_panel_button("https://app.powerbi.com", "g4")
             with col_g5:
-                report_card("Calidad de Pollito", "Descarte y primera", "Pollitos.jpg")
+                report_card("Saca y Venta", "Programación comercial", "Ventas.jpg")
                 open_panel_button("https://app.powerbi.com", "g5")
 
-            st.divider()
-            st.subheader("Pollo Carne")
-            col_g6, col_g7, _ = st.columns(3)
-            with col_g6:
-                report_card("Engorde", "Conversión alimenticia", "PolloCarne.jpg")
-                open_panel_button("https://app.powerbi.com", "g6")
-            with col_g7:
-                report_card("Saca", "Programación de salida", "Saca.jpg")
-                open_panel_button("https://app.powerbi.com", "g7")
-
-        # ================= AREAS NORMALES =================
+        # ================= AREAS INDIVIDUALES =================
         elif area == "Reproductoras":
             col1, col2, col3 = st.columns(3)
             with col1:
-                report_card("Producción Semanal", "Resumen de postura", "Reproductoras.jpg")
+                report_card("Postura", "Control diario", "Reproductoras.jpg")
                 open_panel_button("https://app.powerbi.com", "r1")
-            with col2:
-                report_card("Sanidad", "Programas de vacunación", "Sanidad.jpg")
-                open_panel_button("https://app.powerbi.com", "r2")
-            with col3:
-                report_card("Alimentación", "Eficiencia de consumo", "Alimento.jpg")
-                open_panel_button("https://app.powerbi.com", "r3")
 
         elif area == "Incubación":
             col1, col2, col3 = st.columns(3)
             with col1:
                 report_card("Nacimientos", "Efectividad de planta", "Incubacion.jpg")
                 open_panel_button("https://app.powerbi.com", "i1")
-            with col2:
-                report_card("Cargas", "Control de máquinas", "Maquinas.jpg")
-                open_panel_button("https://app.powerbi.com", "i2")
 
         elif area == "Producción Pollo Carne":
             col1, col2, col3 = st.columns(3)
             with col1:
                 report_card("Engorde", "Conversión alimenticia", "PolloCarne.jpg")
                 open_panel_button("https://app.powerbi.com", "p1")
-            with col2:
-                report_card("Saca", "Programación de salida", "Saca.jpg")
-                open_panel_button("https://app.powerbi.com", "p2")
 
 # =========================================================
 # FOOTER
