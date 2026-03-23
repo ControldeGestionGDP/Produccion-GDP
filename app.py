@@ -269,7 +269,7 @@ if st.session_state.area is None:
     with col3:
         report_card("Producción Pollo Carne",
                     "Monitoreo de engorde",
-                    "PolloCarne.jpg")
+                    "Pollo Carne.jpg")
         if st.button("Ingresar", key="pollo", use_container_width=True):
             st.session_state.area = "Producción Pollo Carne"
             st.session_state.auth = False
