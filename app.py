@@ -4,34 +4,32 @@ from pathlib import Path
 from datetime import datetime
 
 # =============================================================================
-# 1. CONFIGURACIÓN DE PÁGINA (ESTRICTO GESTIÓN HUMANA)
+# 1. CONFIGURACIÓN DE PÁGINA (SIDEBAR CONTRAÍDO POR DEFECTO)
 # =============================================================================
 st.set_page_config(
     page_title="PRODUCCIÓN | GRUPO DON POLLO",
     page_icon="🐥",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed" # Panel contraído a la izquierda
 )
 
 # =============================================================================
-# 2. DEFINICIÓN DE IDENTIDAD VISUAL (PALETA PRODUCCIÓN)
+# 2. DEFINICIÓN DE IDENTIDAD VISUAL
 # =============================================================================
-# Colores corporativos extraídos para el área de Producción
-COLOR_PRIMARY = "#0d897d"    # Teal Principal
-COLOR_SECONDARY = "#8dbf44"  # Verde Don Pollo
-COLOR_ACCENT = "#129b94"     # Turquesa Operativo
+COLOR_PRIMARY = "#0d897d"    
+COLOR_SECONDARY = "#8dbf44"  
+COLOR_ACCENT = "#129b94"     
 COLOR_BACKGROUND = "#F1F5F9"
 COLOR_CARD = "#FFFFFF"
 COLOR_TEXT = "#1E293B"
 
 # =============================================================================
-# 3. GESTIÓN DE RUTAS Y ACTIVOS (RECURSIVO)
+# 3. GESTIÓN DE RUTAS Y ACTIVOS
 # =============================================================================
 BASE_DIR = Path(__file__).resolve().parent
 ASSETS_DIR = BASE_DIR / "assets"
 
 def get_base64(file_path):
-    """Función de codificación para persistencia visual de imágenes"""
     try:
         if file_path.exists():
             with open(file_path, "rb") as f:
@@ -42,163 +40,130 @@ def get_base64(file_path):
     return ""
 
 # =============================================================================
-# 4. INYECCIÓN DE CSS (ESTRUCTURA DE ALTO NIVEL)
+# 4. INYECCIÓN DE CSS (BOTONES ANCHO TOTAL Y HEADER LIMPIO)
 # =============================================================================
 def local_css():
     st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700;800&display=swap');
 
-    /* Reset de Contenedor */
     .block-container {{ padding-top: 2rem; padding-bottom: 2rem; }}
     
-    /* Fondo Global */
     [data-testid="stAppViewContainer"] {{
         background-color: {COLOR_BACKGROUND};
     }}
 
-    /* HEADER TIPO CEO (Rounded Rectangles) */
-    .header-container {{
-        background: white;
-        padding: 2.5rem;
-        border-radius: 25px;
-        border-left: 10px solid {COLOR_PRIMARY};
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    /* HEADER ELEGANTE (SIN CUADRO) */
+    .header-minimal {{
         margin-bottom: 3rem;
-        transition: all 0.3s ease;
-    }}
-    
-    .header-container:hover {{
-        border-left-color: {COLOR_SECONDARY};
+        padding-left: 0.5rem;
     }}
 
     .main-title {{
         font-family: 'Segoe UI', sans-serif;
         color: {COLOR_PRIMARY};
-        font-size: 3rem;
+        font-size: 3.5rem;
         font-weight: 800;
         margin: 0;
-        line-height: 1;
+        letter-spacing: -1.5px;
     }}
 
     .sub-title {{
         font-family: 'Segoe UI', sans-serif;
         color: #64748b;
         font-size: 1.2rem;
-        margin-top: 0.8rem;
+        margin-top: 0.5rem;
     }}
 
-    /* TARJETAS (CARDS) - LÓGICA DE DIMENSIONAMIENTO FIJO */
+    .title-accent {{
+        height: 6px; 
+        width: 120px; 
+        background: {COLOR_SECONDARY}; 
+        border-radius: 10px; 
+        margin-top: 1.2rem;
+    }}
+
+    /* TARJETAS */
     .card-wrapper {{
         background: {COLOR_CARD};
-        border-radius: 22px;
+        border-radius: 22px 22px 0 0; /* Solo arriba */
         overflow: hidden;
         border: 1px solid #e2e8f0;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        height: 100%;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
         display: flex;
         flex-direction: column;
+        height: 100%;
     }}
 
-    .card-wrapper:hover {{
-        transform: translateY(-10px);
-        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-        border-color: {COLOR_SECONDARY};
-    }}
-
-    /* CONTROL DE IMAGEN: NO SE MUEVE */
     .card-image-box img {{
         width: 100%;
-        height: 230px !important;
+        height: 240px !important;
         object-fit: cover !important;
-        border-bottom: 1px solid #f1f5f9;
     }}
 
     .card-content {{
-        padding: 1.5rem;
+        padding: 1.8rem;
         flex-grow: 1;
-        display: flex;
-        flex-direction: column;
     }}
 
     .card-name {{
-        font-size: 1.3rem;
-        font-weight: 700;
+        font-size: 1.4rem;
+        font-weight: 800;
         color: {COLOR_TEXT};
-        margin-bottom: 0.5rem;
-        min-height: 32px;
-     Muse Sans;
+        margin-bottom: 0.6rem;
     }}
 
     .card-desc {{
         color: #64748b;
-        font-size: 0.95rem;
+        font-size: 1rem;
         line-height: 1.5;
-        margin-bottom: 1.5rem;
-        min-height: 60px; /* Alineación de texto */
+        min-height: 50px;
     }}
 
-    /* BOTONES: MISMO TAMAÑO SIEMPRE */
+    /* BOTONES: ANCHO TOTAL Y PEGADOS A LA BASE */
     div.stButton > button {{
         width: 100% !important;
-        height: 54px !important;
-        background: linear-gradient(135deg, {COLOR_PRIMARY} 0%, {COLOR_ACCENT} 100%) !important;
+        height: 60px !important;
+        background: linear-gradient(90deg, {COLOR_PRIMARY} 0%, {COLOR_ACCENT} 100%) !important;
         color: white !important;
         font-weight: 700 !important;
-        font-size: 1rem !important;
-        border-radius: 14px !important;
+        font-size: 1.1rem !important;
+        border-radius: 0 0 22px 22px !important; /* Redondeado solo abajo */
         border: none !important;
+        margin-top: -10px !important; /* Ajuste para unir visualmente */
         text-transform: uppercase;
-        letter-spacing: 1px;
         transition: all 0.3s ease !important;
-        box-shadow: 0 4px 15px rgba(13, 137, 125, 0.2) !important;
+        box-shadow: 0 10px 20px rgba(13, 137, 125, 0.2) !important;
     }}
 
     div.stButton > button:hover {{
         filter: brightness(1.1) !important;
-        transform: scale(1.02) !important;
-        box-shadow: 0 10px 25px rgba(13, 137, 125, 0.3) !important;
+        letter-spacing: 1px;
     }}
 
-    /* LOGIN CONTAINER */
-    .login-wrapper {{
-        max-width: 500px;
-        margin: 5rem auto;
-        background: white;
-        padding: 3.5rem;
-        border-radius: 30px;
-        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
-        text-align: center;
-        border-top: 8px solid {COLOR_PRIMARY};
-    }}
-
-    /* SIDEBAR MODERNO */
+    /* SIDEBAR */
     [data-testid="stSidebar"] {{
         background-color: white;
-        border-right: 1px solid #e2e8f0;
     }}
     </style>
     """, unsafe_allow_html=True)
 
 # =============================================================================
-# 5. FUNCIONES DE RENDERIZADO (COMPONENTES DEL SISTEMA)
+# 5. FUNCIONES DE RENDERIZADO
 # =============================================================================
 def header_component(title, subtitle):
     st.markdown(f"""
-    <div class="header-container">
+    <div class="header-minimal">
         <h1 class="main-title">{title}</h1>
         <p class="sub-title">{subtitle}</p>
-        <div style="height: 6px; width: 100px; background: {COLOR_SECONDARY}; border-radius: 10px; margin-top: 1rem;"></div>
+        <div class="title-accent"></div>
     </div>
     """, unsafe_allow_html=True)
 
 def card_component(title, description, img_name, button_key, is_external=False, url=""):
     img_path = ASSETS_DIR / img_name
     img_b64 = get_base64(img_path)
-    
-    # Manejo de fallback si la imagen no existe
-    src = f"data:image/jpeg;base64,{img_b64}" if img_b64 else "https://via.placeholder.com/400x230?text=Don+Pollo+Produccion"
+    src = f"data:image/jpeg;base64,{img_b64}" if img_b64 else "https://via.placeholder.com/400x240"
 
     st.markdown(f"""
     <div class="card-wrapper">
@@ -215,9 +180,9 @@ def card_component(title, description, img_name, button_key, is_external=False, 
     if is_external:
         st.markdown(f"""
         <a href="{url}" target="_blank" style="text-decoration: none;">
-            <div style="width: 100%; background: linear-gradient(135deg, {COLOR_PRIMARY}, {COLOR_ACCENT}); 
-            color: white; text-align: center; padding: 16px; border-radius: 14px; font-weight: 700; 
-            margin-top: -25px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <div style="width: 100%; background: linear-gradient(90deg, {COLOR_PRIMARY}, {COLOR_ACCENT}); 
+            color: white; text-align: center; padding: 18px; border-radius: 0 0 22px 22px; 
+            font-weight: 700; margin-top: -10px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
                 ABRIR DASHBOARD
             </div>
         </a>
@@ -241,34 +206,25 @@ CREDENTIALS = {
 def login_screen(area_target):
     local_css()
     st.markdown('<div class="login-wrapper">', unsafe_allow_html=True)
+    st.markdown(f"<h2 style='color:{COLOR_PRIMARY};'>ACCESO PRIVADO</h2>", unsafe_allow_html=True)
+    st.markdown(f"<p>Área: <b>{area_target}</b></p>", unsafe_allow_html=True)
+    password = st.text_input("PIN de seguridad", type="password")
     
-    # Logo opcional
-    logo_path = ASSETS_DIR / "logo_don_pollo.png"
-    if logo_path.exists():
-        st.image(str(logo_path), width=180)
-    
-    st.markdown(f"<h2 style='color:{COLOR_PRIMARY}; margin-bottom:0;'>ACCESO PRIVADO</h2>", unsafe_allow_html=True)
-    st.markdown(f"<p style='color:#64748b;'>Área seleccionada: <b>{area_target}</b></p>", unsafe_allow_html=True)
-    
-    password = st.text_input("Ingrese PIN de seguridad", type="password", help="Solicite su clave al administrador de BI")
-    
-    c1, c2 = st.columns(2)
-    with c1:
+    col_l, col_r = st.columns(2)
+    with col_l:
         if st.button("CONFIRMAR"):
             if password == CREDENTIALS.get(area_target):
                 st.session_state.auth = True
                 st.rerun()
-            else:
-                st.error("PIN Incorrecto")
-    with c2:
+            else: st.error("Incorrecto")
+    with col_r:
         if st.button("REGRESAR"):
             st.session_state.area = None
             st.rerun()
-            
     st.markdown('</div>', unsafe_allow_html=True)
 
 # =============================================================================
-# 7. BLOQUE PRINCIPAL (MAIN LOOP)
+# 7. BLOQUE PRINCIPAL
 # =============================================================================
 def main():
     local_css()
@@ -276,61 +232,45 @@ def main():
     if "area" not in st.session_state: st.session_state.area = None
     if "auth" not in st.session_state: st.session_state.auth = False
 
-    # A. SELECCIÓN DE UNIDAD DE NEGOCIO
-    if st.session_state.area is None:
-        header_component("Ecosistema Producción", "Plataforma de visualización estratégica para la toma de decisiones en tiempo real.")
-        
-        col_1, col_2, col_3 = st.columns(3)
-        with col_1:
-            card_component("Reproductoras", "Monitoreo de lotes, sanidad y productividad de huevo fértil.", "Reproductoras.jpg", "btn_repro")
-        with col_2:
-            card_component("Incubación", "Control de parámetros de incubación y porcentaje de nacimientos.", "Incubacion.jpg", "btn_inc")
-        with col_3:
-            card_component("Producción Pollo Carne", "Eficiencia alimenticia, mortalidad y logística de engorde.", "PolloCarne.jpg", "btn_pollo")
+    # A. PANEL DE GERENCIA (CONTRAÍDO)
+    with st.sidebar:
+        st.markdown("### 🛠️ Administración")
+        if st.button("Panel Gerencial"):
+            st.session_state.area = "Gerencia"
+            st.session_state.auth = False
+            st.rerun()
+        st.divider()
+        st.caption("Grupo Don Pollo - Producción 2026")
 
-    # B. FLUJO DE AUTENTICACIÓN
+    # B. SELECCIÓN DE UNIDAD
+    if st.session_state.area is None:
+        header_component("Ecosistema Producción", "Plataforma de visualización estratégica para la toma de decisiones.")
+        
+        c1, c2, c3 = st.columns(3)
+        with c1: card_component("Reproductoras", "Monitoreo de lotes y huevo fértil.", "Reproductoras.jpg", "b_repro")
+        with c2: card_component("Incubación", "Control de planta y nacimientos.", "Incubacion.jpg", "b_inc")
+        with c3: card_component("Producción Pollo Carne", "Eficiencia alimenticia y logística.", "PolloCarne.jpg", "b_pollo")
+
+    # C. LOGIN
     elif not st.session_state.auth:
         login_screen(st.session_state.area)
 
-    # C. VISTA DE DASHBOARDS (POST-LOGIN)
+    # D. DASHBOARDS
     else:
         current_area = st.session_state.area
-        header_component(current_area, f"Bienvenido al panel centralizado de {current_area}")
-        
-        if st.sidebar.button("⬅ CERRAR SESIÓN"):
+        header_component(current_area, f"Indicadores clave de {current_area}")
+        if st.sidebar.button("⬅ SALIR"):
             st.session_state.area = None
             st.session_state.auth = False
             st.rerun()
 
-        # ÁREA GERENCIAL (Múltiples Reportes)
         if current_area == "Gerencia":
-            st.markdown("### 📈 Resumen Operativo")
-            g_col1, g_col2, g_col3 = st.columns(3)
-            with g_col1:
-                card_component("Postura Semanal", "Resumen gerencial de lotes", "Reproductoras.jpg", "g1", True, "URL_PBI_1")
-            with g_col2:
-                card_component("Nacimientos", "Efectividad de planta", "Incubacion.jpg", "g2", True, "URL_PBI_2")
-            with g_col3:
-                card_component("Despacho", "Salida a campo", "Pollito.jpg", "g3", True, "URL_PBI_3")
-            
-            st.divider()
-            g_col4, g_col5, _ = st.columns(3)
-            with g_col4:
-                card_component("Engorde", "FCR y Mortalidad", "PolloCarne.jpg", "g4", True, "URL_PBI_4")
-            with g_col5:
-                card_component("Comercialización", "Proyección de saca", "Ventas.jpg", "g5", True, "URL_PBI_5")
+            g_c1, g_c2, g_c3 = st.columns(3)
+            with g_c1: card_component("Postura", "Lotes activos", "Reproductoras.jpg", "g1", True, "URL1")
+            with g_c2: card_component("Nacimientos", "Eficiencia", "Incubacion.jpg", "g2", True, "URL2")
+            with g_c3: card_component("Engorde", "FCR/Mortalidad", "PolloCarne.jpg", "g3", True, "URL3")
 
-        # ÁREAS OPERATIVAS (Reporte Único)
-        else:
-            st.markdown(f"### 📑 Dashboard {current_area}")
-            op_col1, _, _ = st.columns(3)
-            with op_col1:
-                card_component(f"Reporte {current_area}", "Acceso completo a métricas", "default.jpg", "op1", True, "URL_ESPECIFICA")
-
-# =============================================================================
-# 8. EJECUCIÓN DEL MÓDULO
-# =============================================================================
 if __name__ == "__main__":
     main()
-    
+
 st.markdown("<br><hr><center style='color:#94a3b8; font-size:0.8rem;'>© 2026 GRUPO DON POLLO | GERENCIA DE CONTROL DE GESTIÓN</center>", unsafe_allow_html=True)
