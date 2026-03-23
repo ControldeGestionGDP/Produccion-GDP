@@ -10,11 +10,11 @@ st.set_page_config(
     page_title="PRODUCCIÓN | GRUPO DON POLLO",
     page_icon="🐥",
     layout="wide",
-    initial_sidebar_state="collapsed" # Panel contraído a la izquierda
+    initial_sidebar_state="collapsed" 
 )
 
 # =============================================================================
-# 2. DEFINICIÓN DE IDENTIDAD VISUAL (PALETA PRODUCCIÓN)
+# 2. DEFINICIÓN DE IDENTIDAD VISUAL
 # =============================================================================
 COLOR_PRIMARY = "#0d897d"    # Teal Principal
 COLOR_SECONDARY = "#8dbf44"  # Verde Don Pollo
@@ -30,7 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent
 ASSETS_DIR = BASE_DIR / "assets"
 
 def get_base64(file_path):
-    """Función de codificación para persistencia visual de imágenes"""
+    """Función de codificación para imágenes"""
     try:
         if file_path.exists():
             with open(file_path, "rb") as f:
@@ -88,18 +88,13 @@ def local_css():
     /* TARJETAS (CARDS) */
     .card-wrapper {{
         background: {COLOR_CARD};
-        border-radius: 22px 22px 0 0; /* Solo arriba para unir con el botón */
+        border-radius: 22px 22px 0 0; 
         overflow: hidden;
         border: 1px solid #e2e8f0;
         box-shadow: 0 10px 25px rgba(0,0,0,0.05);
         display: flex;
         flex-direction: column;
         height: 100%;
-        transition: transform 0.3s ease;
-    }}
-
-    .card-wrapper:hover {{
-        transform: translateY(-5px);
     }}
 
     .card-image-box img {{
@@ -137,9 +132,9 @@ def local_css():
         color: white !important;
         font-weight: 700 !important;
         font-size: 1.1rem !important;
-        border-radius: 0 0 22px 22px !important; /* Redondeado solo abajo */
+        border-radius: 0 0 22px 22px !important; 
         border: none !important;
-        margin-top: -10px !important; /* Elimina espacio entre card y botón */
+        margin-top: -10px !important; 
         text-transform: uppercase;
         letter-spacing: 1px;
         transition: all 0.3s ease !important;
@@ -148,10 +143,10 @@ def local_css():
 
     div.stButton > button:hover {{
         filter: brightness(1.1) !important;
-        box-shadow: 0 15px 25px rgba(13, 137, 125, 0.25) !important;
+        transform: translateY(2px) !important;
     }}
 
-    /* SIDEBAR MODERNO */
+    /* SIDEBAR */
     [data-testid="stSidebar"] {{
         background-color: white;
         border-right: 1px solid #e2e8f0;
@@ -206,14 +201,14 @@ def card_component(title, description, img_name, button_key, is_external=False, 
             st.rerun()
 
 # =============================================================================
-# 6. LÓGICA DE CONTROL DE ACCESO
+# 6. LÓGICA DE CONTROL DE ACCESO (CORREGIDO)
 # =============================================================================
-CREDENTIALS = {{
+CREDENTIALS = {
     "Reproductoras": "repro2026",
     "Incubación": "incuba2026",
     "Producción Pollo Carne": "pollo2026",
     "Gerencia": "gerencia2026"
-}}
+}
 
 def login_screen(area_target):
     local_css()
@@ -246,7 +241,7 @@ def main():
     if "area" not in st.session_state: st.session_state.area = None
     if "auth" not in st.session_state: st.session_state.auth = False
 
-    # A. PANEL DE GERENCIA (CONTRAÍDO INICIALMENTE)
+    # A. PANEL DE GERENCIA (CONTRAÍDO)
     with st.sidebar:
         st.markdown("### 🛠️ Administración")
         if st.button("Panel Gerencial"):
