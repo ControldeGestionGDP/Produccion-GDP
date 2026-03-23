@@ -6,10 +6,11 @@ from pathlib import Path
 # =========================================================
 st.set_page_config(
     page_title="Producción • GDP",
-    page_icon="🐣",
+    page_icon="🐥",
     layout="wide"
 )
 
+# Colores ajustados a Producción
 COLOR1 = "#8dbf44"
 COLOR2 = "#0d897d"
 COLOR3 = "#129b94"
@@ -95,7 +96,7 @@ with st.sidebar:
 
 
 # =========================================================
-# ESTILOS (TU BLOQUE ORIGINAL)
+# ESTILOS (BLOQUE ORIGINAL COMPLETO)
 # =========================================================
 st.markdown(f"""
 <style>
@@ -189,7 +190,7 @@ div.stButton > button:hover {{
 
 
 # =========================================================
-# FUNCIONES (SIN CAMBIOS)
+# FUNCIONES
 # =========================================================
 def report_card(titulo, desc, img_relative_path):
     img_path = ASSETS_DIR / img_relative_path
@@ -282,7 +283,6 @@ else:
 
         col1, col2, col3 = st.columns([1,2,1])
         with col2:
-
             st.markdown(f"""
             <div class="login-box">
                 <div style="font-size:1.4rem;font-weight:700;color:{COLOR2};text-align:center;">
@@ -322,39 +322,74 @@ else:
         # ================= GERENCIA VE TODO =================
         if area == "Gerencia":
 
-            st.subheader("Producción Aves")
+            st.subheader("Reproductoras e Incubación")
             col1, col2, col3 = st.columns(3)
             with col1:
-                report_card("Reproductoras", "Gestión de lotes y huevos", "Reproductoras.jpg")
+                report_card("Lotes Reproductoras", "Producción de huevos", "Reproductoras.jpg")
                 open_panel_button("https://app.powerbi.com", "g1")
             with col2:
-                report_card("Incubación", "Control de nacimientos", "Incubacion.jpg")
+                report_card("Inventario Huevos", "Stock y calidad", "Huevos.jpg")
                 open_panel_button("https://app.powerbi.com", "g2")
             with col3:
-                report_card("Producción Pollo Carne", "Monitoreo de engorde", "PolloCarne.jpg")
+                report_card("Nacimientos", "Efectividad de planta", "Incubacion.jpg")
                 open_panel_button("https://app.powerbi.com", "g3")
             
-            # Segunda fila alineada a la izquierda (3 columnas)
-            # col_g4, col_g5, _ = st.columns(3) # Si añades más áreas como Cerdos, irían aquí.
+            # Segunda fila para Gerencia
+            col_g4, col_g5, _ = st.columns(3)
+            with col_g4:
+                report_card("Engorde Pollo Carne", "Conversión y mortalidad", "PolloCarne.jpg")
+                open_panel_button("https://app.powerbi.com", "g_md")
+            with col_g5:
+                report_card("Costos de Producción", "Impacto financiero", "Costos.jpg")
+                open_panel_button("https://app.powerbi.com", "g_ce")
+
+            st.divider()
+            st.subheader("Otras Unidades")
+            col1, col2, col3 = st.columns([1,2,1])
+            with col2:
+                report_card("Porcinos", "Panel en construcción", "Cerdos.jpg")
+                open_panel_button("https://app.powerbi.com", "g4")
+
+            st.divider()
+            st.subheader("Logística de Alimento")
+            col1, col2, col3 = st.columns([1,2,1])
+            with col2:
+                report_card("Planta de Alimento", "Panel en construcción", "Alimento.jpg")
+                open_panel_button("https://app.powerbi.com", "g5")
 
         # ================= AREAS NORMALES =================
         elif area == "Reproductoras":
+
             col1, col2, col3 = st.columns(3)
             with col1:
-                report_card("Reproductoras", "Gestión de lotes y huevos", "Reproductoras.jpg")
-                open_panel_button("https://app.powerbi.com", "r1")
+                report_card("Lotes Reproductoras", "Producción de huevos", "Reproductoras.jpg")
+                open_panel_button("https://app.powerbi.com", "v")
+            with col2:
+                report_card("Inventario Huevos", "Stock y calidad", "Huevos.jpg")
+                open_panel_button("https://app.powerbi.com", "d")
+            with col3:
+                report_card("Levante", "Crecimiento de aves", "Levante.jpg")
+                open_panel_button("https://app.powerbi.com", "e")
+            
+            col_a4, col_a5, _ = st.columns(3)
+            with col_a4:
+                report_card("Sanidad", "Control veterinario", "Sanidad.jpg")
+                open_panel_button("https://app.powerbi.com", "md")
+            with col_a5:
+                report_card("Mortalidad", "Seguimiento diario", "Mortalidad.jpg")
+                open_panel_button("https://app.powerbi.com", "ce")
 
         elif area == "Incubación":
-            col1, col2, col3 = st.columns(3)
-            with col1: # Manteniendo alineación a la izquierda
-                report_card("Incubación", "Control de nacimientos", "Incubacion.jpg")
-                open_panel_button("https://app.powerbi.com", "i1")
+            col1, col2, col3 = st.columns([1,2,1])
+            with col2:
+                report_card("Nacimientos", "Efectividad de planta", "Incubacion.jpg")
+                open_panel_button("https://app.powerbi.com", "c")
 
         elif area == "Producción Pollo Carne":
-            col1, col2, col3 = st.columns(3)
-            with col1: # Manteniendo alineación a la izquierda
-                report_card("Producción Pollo Carne", "Monitoreo de engorde", "PolloCarne.jpg")
-                open_panel_button("https://app.powerbi.com", "p1")
+            col1, col2, col3 = st.columns([1,2,1])
+            with col2:
+                report_card("Engorde Pollo Carne", "Conversión y mortalidad", "PolloCarne.jpg")
+                open_panel_button("https://app.powerbi.com", "i")
 
 # =========================================================
 # FOOTER
