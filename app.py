@@ -184,13 +184,13 @@ if st.session_state.area is None:
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        report_card("Reproductoras", "Gestión de lotes y huevos", "Repro_Main.jpg")
+        report_card("Reproductoras", "Gestión de lotes y huevos", "Reproductoras.jpg")
         if st.button("Ingresar", key="btn_repro"):
             st.session_state.area = "Reproductoras"; st.rerun()
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        report_card("Cerdos", "Unidad de porcinos", "Cerdos_Main.jpg")
+        report_card("Cerdos", "Unidad de porcinos", "Cerdos.jpg")
         if st.button("Ingresar", key="btn_cerdos"):
             st.session_state.area = "Cerdos"; st.rerun()
 
