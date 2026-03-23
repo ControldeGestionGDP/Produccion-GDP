@@ -14,11 +14,11 @@ st.set_page_config(
 )
 
 # =============================================================================
-# 2. DEFINICIÓN DE IDENTIDAD VISUAL
+# 2. DEFINICIÓN DE IDENTIDAD VISUAL (PALETA PRODUCCIÓN)
 # =============================================================================
-COLOR_PRIMARY = "#0d897d"    
-COLOR_SECONDARY = "#8dbf44"  
-COLOR_ACCENT = "#129b94"     
+COLOR_PRIMARY = "#0d897d"    # Teal Principal
+COLOR_SECONDARY = "#8dbf44"  # Verde Don Pollo
+COLOR_ACCENT = "#129b94"     # Turquesa Operativo
 COLOR_BACKGROUND = "#F1F5F9"
 COLOR_CARD = "#FFFFFF"
 COLOR_TEXT = "#1E293B"
@@ -30,6 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent
 ASSETS_DIR = BASE_DIR / "assets"
 
 def get_base64(file_path):
+    """Función de codificación para persistencia visual de imágenes"""
     try:
         if file_path.exists():
             with open(file_path, "rb") as f:
@@ -40,7 +41,7 @@ def get_base64(file_path):
     return ""
 
 # =============================================================================
-# 4. INYECCIÓN DE CSS (BOTONES ANCHO TOTAL Y HEADER LIMPIO)
+# 4. INYECCIÓN DE CSS (HEADER LIMPIO Y BOTONES ANCHO TOTAL)
 # =============================================================================
 def local_css():
     st.markdown(f"""
@@ -55,7 +56,7 @@ def local_css():
 
     /* HEADER ELEGANTE (SIN CUADRO) */
     .header-minimal {{
-        margin-bottom: 3rem;
+        margin-bottom: 3.5rem;
         padding-left: 0.5rem;
     }}
 
@@ -66,13 +67,14 @@ def local_css():
         font-weight: 800;
         margin: 0;
         letter-spacing: -1.5px;
+        line-height: 1;
     }}
 
     .sub-title {{
         font-family: 'Segoe UI', sans-serif;
         color: #64748b;
         font-size: 1.2rem;
-        margin-top: 0.5rem;
+        margin-top: 0.8rem;
     }}
 
     .title-accent {{
@@ -80,19 +82,24 @@ def local_css():
         width: 120px; 
         background: {COLOR_SECONDARY}; 
         border-radius: 10px; 
-        margin-top: 1.2rem;
+        margin-top: 1.5rem;
     }}
 
-    /* TARJETAS */
+    /* TARJETAS (CARDS) */
     .card-wrapper {{
         background: {COLOR_CARD};
-        border-radius: 22px 22px 0 0; /* Solo arriba */
+        border-radius: 22px 22px 0 0; /* Solo arriba para unir con el botón */
         overflow: hidden;
         border: 1px solid #e2e8f0;
         box-shadow: 0 10px 25px rgba(0,0,0,0.05);
         display: flex;
         flex-direction: column;
         height: 100%;
+        transition: transform 0.3s ease;
+    }}
+
+    .card-wrapper:hover {{
+        transform: translateY(-5px);
     }}
 
     .card-image-box img {{
@@ -104,6 +111,8 @@ def local_css():
     .card-content {{
         padding: 1.8rem;
         flex-grow: 1;
+        display: flex;
+        flex-direction: column;
     }}
 
     .card-name {{
@@ -117,7 +126,7 @@ def local_css():
         color: #64748b;
         font-size: 1rem;
         line-height: 1.5;
-        min-height: 50px;
+        min-height: 60px;
     }}
 
     /* BOTONES: ANCHO TOTAL Y PEGADOS A LA BASE */
@@ -130,26 +139,28 @@ def local_css():
         font-size: 1.1rem !important;
         border-radius: 0 0 22px 22px !important; /* Redondeado solo abajo */
         border: none !important;
-        margin-top: -10px !important; /* Ajuste para unir visualmente */
+        margin-top: -10px !important; /* Elimina espacio entre card y botón */
         text-transform: uppercase;
+        letter-spacing: 1px;
         transition: all 0.3s ease !important;
-        box-shadow: 0 10px 20px rgba(13, 137, 125, 0.2) !important;
+        box-shadow: 0 10px 20px rgba(13, 137, 125, 0.15) !important;
     }}
 
     div.stButton > button:hover {{
         filter: brightness(1.1) !important;
-        letter-spacing: 1px;
+        box-shadow: 0 15px 25px rgba(13, 137, 125, 0.25) !important;
     }}
 
-    /* SIDEBAR */
+    /* SIDEBAR MODERNO */
     [data-testid="stSidebar"] {{
         background-color: white;
+        border-right: 1px solid #e2e8f0;
     }}
     </style>
     """, unsafe_allow_html=True)
 
 # =============================================================================
-# 5. FUNCIONES DE RENDERIZADO
+# 5. COMPONENTES DE INTERFAZ
 # =============================================================================
 def header_component(title, subtitle):
     st.markdown(f"""
@@ -182,7 +193,8 @@ def card_component(title, description, img_name, button_key, is_external=False, 
         <a href="{url}" target="_blank" style="text-decoration: none;">
             <div style="width: 100%; background: linear-gradient(90deg, {COLOR_PRIMARY}, {COLOR_ACCENT}); 
             color: white; text-align: center; padding: 18px; border-radius: 0 0 22px 22px; 
-            font-weight: 700; margin-top: -10px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+            font-weight: 700; margin-top: -10px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-transform: uppercase; font-size: 1.1rem; letter-spacing: 1px;">
                 ABRIR DASHBOARD
             </div>
         </a>
@@ -196,19 +208,20 @@ def card_component(title, description, img_name, button_key, is_external=False, 
 # =============================================================================
 # 6. LÓGICA DE CONTROL DE ACCESO
 # =============================================================================
-CREDENTIALS = {
+CREDENTIALS = {{
     "Reproductoras": "repro2026",
     "Incubación": "incuba2026",
     "Producción Pollo Carne": "pollo2026",
     "Gerencia": "gerencia2026"
-}
+}}
 
 def login_screen(area_target):
     local_css()
     st.markdown('<div class="login-wrapper">', unsafe_allow_html=True)
-    st.markdown(f"<h2 style='color:{COLOR_PRIMARY};'>ACCESO PRIVADO</h2>", unsafe_allow_html=True)
-    st.markdown(f"<p>Área: <b>{area_target}</b></p>", unsafe_allow_html=True)
-    password = st.text_input("PIN de seguridad", type="password")
+    st.markdown(f"<h2 style='color:{COLOR_PRIMARY}; text-align:center;'>ACCESO PRIVADO</h2>", unsafe_allow_html=True)
+    st.markdown(f"<p style='text-align:center;'>Área seleccionada: <b>{area_target}</b></p>", unsafe_allow_html=True)
+    
+    password = st.text_input("Ingrese PIN de seguridad", type="password")
     
     col_l, col_r = st.columns(2)
     with col_l:
@@ -216,7 +229,8 @@ def login_screen(area_target):
             if password == CREDENTIALS.get(area_target):
                 st.session_state.auth = True
                 st.rerun()
-            else: st.error("Incorrecto")
+            else:
+                st.error("PIN Incorrecto")
     with col_r:
         if st.button("REGRESAR"):
             st.session_state.area = None
@@ -232,7 +246,7 @@ def main():
     if "area" not in st.session_state: st.session_state.area = None
     if "auth" not in st.session_state: st.session_state.auth = False
 
-    # A. PANEL DE GERENCIA (CONTRAÍDO)
+    # A. PANEL DE GERENCIA (CONTRAÍDO INICIALMENTE)
     with st.sidebar:
         st.markdown("### 🛠️ Administración")
         if st.button("Panel Gerencial"):
@@ -242,7 +256,7 @@ def main():
         st.divider()
         st.caption("Grupo Don Pollo - Producción 2026")
 
-    # B. SELECCIÓN DE UNIDAD
+    # B. VISTA DE SELECCIÓN
     if st.session_state.area is None:
         header_component("Ecosistema Producción", "Plataforma de visualización estratégica para la toma de decisiones.")
         
@@ -251,24 +265,25 @@ def main():
         with c2: card_component("Incubación", "Control de planta y nacimientos.", "Incubacion.jpg", "b_inc")
         with c3: card_component("Producción Pollo Carne", "Eficiencia alimenticia y logística.", "PolloCarne.jpg", "b_pollo")
 
-    # C. LOGIN
+    # C. FLUJO DE AUTENTICACIÓN
     elif not st.session_state.auth:
         login_screen(st.session_state.area)
 
-    # D. DASHBOARDS
+    # D. VISTA INTERNA (DASHBOARDS)
     else:
         current_area = st.session_state.area
         header_component(current_area, f"Indicadores clave de {current_area}")
-        if st.sidebar.button("⬅ SALIR"):
+        
+        if st.sidebar.button("⬅ CERRAR SESIÓN"):
             st.session_state.area = None
             st.session_state.auth = False
             st.rerun()
 
         if current_area == "Gerencia":
             g_c1, g_c2, g_c3 = st.columns(3)
-            with g_c1: card_component("Postura", "Lotes activos", "Reproductoras.jpg", "g1", True, "URL1")
-            with g_c2: card_component("Nacimientos", "Eficiencia", "Incubacion.jpg", "g2", True, "URL2")
-            with g_c3: card_component("Engorde", "FCR/Mortalidad", "PolloCarne.jpg", "g3", True, "URL3")
+            with g_c1: card_component("Postura", "Lotes activos", "Reproductoras.jpg", "g1", True, "URL_PBI_1")
+            with g_c2: card_component("Nacimientos", "Eficiencia planta", "Incubacion.jpg", "g2", True, "URL_PBI_2")
+            with g_c3: card_component("Engorde", "FCR / Mortalidad", "PolloCarne.jpg", "g3", True, "URL_PBI_3")
 
 if __name__ == "__main__":
     main()
