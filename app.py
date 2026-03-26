@@ -448,6 +448,6 @@ else:
 # FOOTER
 # =========================================================
 st.markdown(
-    "<center style='color:#9ca3af;margin-top:40px;'>Gerencia de Producción • Grupo Don Pollo</center>",
+    "<center style='color:#9ca3af;margin-top:40px;'>Gerencia de Control de Gestión • Grupo Don Pollo</center>",
     unsafe_allow_html=True
 )
