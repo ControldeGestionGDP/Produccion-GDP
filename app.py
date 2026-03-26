@@ -377,10 +377,10 @@ else:
             col1, col2 = st.columns(2)
             with col1:
                 report_card("Reporte Diario", "Operación diaria", "diario.jpg")
-                open_panel_button("URL", "g8")
+                open_panel_button("https://app.powerbi.com/links/VlI_Pqq3rS?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=53e6330f-bc0c-4549-b247-0f0a729bb3ec", "g8")
             with col2:
                 report_card("Reporte General", "Visión consolidada", "general.jpg")
-                open_panel_button("URL", "g9")
+                open_panel_button("https://app.powerbi.com/links/qBUR10mRm3?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g9")
 
         # ================= AREAS NORMALES =================
 
@@ -438,11 +438,11 @@ else:
 
             with col1:
                 report_card("Reporte Diario", "Operación diaria", "diario.jpg")
-                open_panel_button("URL", "pb1")
+                open_panel_button("https://app.powerbi.com/links/VlI_Pqq3rS?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=53e6330f-bc0c-4549-b247-0f0a729bb3ec", "pb1")
 
             with col2:
                 report_card("Reporte General", "Visión consolidada", "general.jpg")
-                open_panel_button("URL", "pb2")
+                open_panel_button("https://app.powerbi.com/links/qBUR10mRm3?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "pb2")
 
 # =========================================================
 # FOOTER
