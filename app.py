@@ -339,10 +339,10 @@ else:
                 open_panel_button("https://app.powerbi.com/links/g2lIM309oY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=b43e89fd-62e5-4778-aaab-8915d510ba46", "g1")
             with col2:
                 report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
-                open_panel_button("URL", "g2")
+                open_panel_button("https://app.powerbi.com/links/FlfN0CCJ4H?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g2")
             with col3:
                 report_card("Faltantes y Sobrantes", "Control de diferencias", "faltantes.jpg")
-                open_panel_button("URL", "g3")
+                open_panel_button("https://app.powerbi.com/links/IEWsDiPysE?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g3")
 
             st.divider()
 
@@ -394,11 +394,11 @@ else:
 
             with col2:
                 report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
-                open_panel_button("URL", "pc2")
+                open_panel_button("https://app.powerbi.com/links/FlfN0CCJ4H?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "pc2")
 
             with col3:
                 report_card("Faltantes y Sobrantes", "Control de diferencias", "faltantes.jpg")
-                open_panel_button("URL", "pc3")
+                open_panel_button("https://app.powerbi.com/links/IEWsDiPysE?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "pc3")
 
 
         elif area == "Reproductoras":
