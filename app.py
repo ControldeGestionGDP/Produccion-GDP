@@ -1,286 +1,270 @@
 import streamlit as st
-import base64
 from pathlib import Path
-from datetime import datetime
 
-# =============================================================================
-# 1. CONFIGURACIÓN DE PÁGINA (SIDEBAR CONTRAÍDO POR DEFECTO)
-# =============================================================================
+# =========================================================
+# CONFIG
+# =========================================================
 st.set_page_config(
-    page_title="PRODUCCIÓN | GRUPO DON POLLO",
-    page_icon="🐥",
-    layout="wide",
-    initial_sidebar_state="collapsed" 
+    page_title="Gerencia de Producción",
+    page_icon="🐔",
+    layout="wide"
 )
 
-# =============================================================================
-# 2. DEFINICIÓN DE IDENTIDAD VISUAL
-# =============================================================================
-COLOR_PRIMARY = "#0d897d"    # Teal Principal
-COLOR_SECONDARY = "#8dbf44"  # Verde Don Pollo
-COLOR_ACCENT = "#129b94"     # Turquesa Operativo
-COLOR_BACKGROUND = "#F1F5F9"
-COLOR_CARD = "#FFFFFF"
-COLOR_TEXT = "#1E293B"
+COLOR1 = "#1071B8"
+COLOR2 = "#2E3788"
+COLOR3 = "#C4579B"
 
-# =============================================================================
-# 3. GESTIÓN DE RUTAS Y ACTIVOS
-# =============================================================================
+# =========================================================
+# RUTA BASE
+# =========================================================
 BASE_DIR = Path(__file__).resolve().parent
 ASSETS_DIR = BASE_DIR / "assets"
 
-def get_base64(file_path):
-    """Función de codificación para imágenes"""
-    try:
-        if file_path.exists():
-            with open(file_path, "rb") as f:
-                data = f.read()
-            return base64.b64encode(data).decode()
-    except Exception as e:
-        st.error(f"Error crítico en activo {file_path.name}: {e}")
-    return ""
-
-# =============================================================================
-# 4. INYECCIÓN DE CSS (HEADER LIMPIO Y BOTONES ANCHO TOTAL)
-# =============================================================================
-def local_css():
-    st.markdown(f"""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700;800&display=swap');
-
-    .block-container {{ padding-top: 2rem; padding-bottom: 2rem; }}
-    
-    [data-testid="stAppViewContainer"] {{
-        background-color: {COLOR_BACKGROUND};
-    }}
-
-    /* HEADER ELEGANTE (SIN CUADRO) */
-    .header-minimal {{
-        margin-bottom: 3.5rem;
-        padding-left: 0.5rem;
-    }}
-
-    .main-title {{
-        font-family: 'Segoe UI', sans-serif;
-        color: {COLOR_PRIMARY};
-        font-size: 3.5rem;
-        font-weight: 800;
-        margin: 0;
-        letter-spacing: -1.5px;
-        line-height: 1;
-    }}
-
-    .sub-title {{
-        font-family: 'Segoe UI', sans-serif;
-        color: #64748b;
-        font-size: 1.2rem;
-        margin-top: 0.8rem;
-    }}
-
-    .title-accent {{
-        height: 6px; 
-        width: 120px; 
-        background: {COLOR_SECONDARY}; 
-        border-radius: 10px; 
-        margin-top: 1.5rem;
-    }}
-
-    /* TARJETAS (CARDS) */
-    .card-wrapper {{
-        background: {COLOR_CARD};
-        border-radius: 22px 22px 0 0; 
-        overflow: hidden;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-    }}
-
-    .card-image-box img {{
-        width: 100%;
-        height: 240px !important;
-        object-fit: cover !important;
-    }}
-
-    .card-content {{
-        padding: 1.8rem;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-    }}
-
-    .card-name {{
-        font-size: 1.4rem;
-        font-weight: 800;
-        color: {COLOR_TEXT};
-        margin-bottom: 0.6rem;
-    }}
-
-    .card-desc {{
-        color: #64748b;
-        font-size: 1rem;
-        line-height: 1.5;
-        min-height: 60px;
-    }}
-
-    /* BOTONES: ANCHO TOTAL Y PEGADOS A LA BASE */
-    div.stButton > button {{
-        width: 100% !important;
-        height: 60px !important;
-        background: linear-gradient(90deg, {COLOR_PRIMARY} 0%, {COLOR_ACCENT} 100%) !important;
-        color: white !important;
-        font-weight: 700 !important;
-        font-size: 1.1rem !important;
-        border-radius: 0 0 22px 22px !important; 
-        border: none !important;
-        margin-top: -10px !important; 
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        transition: all 0.3s ease !important;
-        box-shadow: 0 10px 20px rgba(13, 137, 125, 0.15) !important;
-    }}
-
-    div.stButton > button:hover {{
-        filter: brightness(1.1) !important;
-        transform: translateY(2px) !important;
-    }}
-
-    /* SIDEBAR */
-    [data-testid="stSidebar"] {{
-        background-color: white;
-        border-right: 1px solid #e2e8f0;
-    }}
-    </style>
-    """, unsafe_allow_html=True)
-
-# =============================================================================
-# 5. COMPONENTES DE INTERFAZ
-# =============================================================================
-def header_component(title, subtitle):
-    st.markdown(f"""
-    <div class="header-minimal">
-        <h1 class="main-title">{title}</h1>
-        <p class="sub-title">{subtitle}</p>
-        <div class="title-accent"></div>
-    </div>
-    """, unsafe_allow_html=True)
-
-def card_component(title, description, img_name, button_key, is_external=False, url=""):
-    img_path = ASSETS_DIR / img_name
-    img_b64 = get_base64(img_path)
-    src = f"data:image/jpeg;base64,{img_b64}" if img_b64 else "https://via.placeholder.com/400x240"
-
-    st.markdown(f"""
-    <div class="card-wrapper">
-        <div class="card-image-box">
-            <img src="{src}">
-        </div>
-        <div class="card-content">
-            <div class="card-name">{title}</div>
-            <div class="card-desc">{description}</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    if is_external:
-        st.markdown(f"""
-        <a href="{url}" target="_blank" style="text-decoration: none;">
-            <div style="width: 100%; background: linear-gradient(90deg, {COLOR_PRIMARY}, {COLOR_ACCENT}); 
-            color: white; text-align: center; padding: 18px; border-radius: 0 0 22px 22px; 
-            font-weight: 700; margin-top: -10px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            text-transform: uppercase; font-size: 1.1rem; letter-spacing: 1px;">
-                ABRIR DASHBOARD
-            </div>
-        </a>
-        """, unsafe_allow_html=True)
-    else:
-        if st.button(f"INGRESAR", key=button_key):
-            st.session_state.area = title
-            st.session_state.auth = False
-            st.rerun()
-
-# =============================================================================
-# 6. LÓGICA DE CONTROL DE ACCESO (CORREGIDO)
-# =============================================================================
-CREDENTIALS = {
+# =========================================================
+# PASSWORDS
+# =========================================================
+PASSWORDS = {
+    "Pollo Carne": "pollo2026",
     "Reproductoras": "repro2026",
     "Incubación": "incuba2026",
-    "Producción Pollo Carne": "pollo2026",
-    "Gerencia": "gerencia2026"
+    "Cerdos": "cerdos2026",
+    "Planta de Beneficio": "beneficio2026"
 }
 
-def login_screen(area_target):
-    local_css()
-    st.markdown('<div class="login-wrapper">', unsafe_allow_html=True)
-    st.markdown(f"<h2 style='color:{COLOR_PRIMARY}; text-align:center;'>ACCESO PRIVADO</h2>", unsafe_allow_html=True)
-    st.markdown(f"<p style='text-align:center;'>Área seleccionada: <b>{area_target}</b></p>", unsafe_allow_html=True)
-    
-    password = st.text_input("Ingrese PIN de seguridad", type="password")
-    
-    col_l, col_r = st.columns(2)
-    with col_l:
-        if st.button("CONFIRMAR"):
-            if password == CREDENTIALS.get(area_target):
+# =========================================================
+# SESSION STATE
+# =========================================================
+if "area" not in st.session_state:
+    st.session_state.area = None
+
+if "auth" not in st.session_state:
+    st.session_state.auth = False
+
+# =========================================================
+# ESTILOS (MISMO TUYO)
+# =========================================================
+st.markdown(f"""
+<style>
+.main-title {{
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: {COLOR2};
+}}
+.title-accent {{
+    height: 4px;
+    width: 120px;
+    background: linear-gradient(90deg,{COLOR1},{COLOR2},{COLOR3});
+    border-radius: 4px;
+    margin-bottom: 28px;
+}}
+.card {{
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+    margin-bottom: 8px;
+    background: white;
+}}
+.card-title {{
+    padding: 15px;
+    font-weight: 700;
+    font-size: 1.1rem;
+}}
+div.stButton > button {{
+    width: 100%;
+    background: linear-gradient(90deg, {COLOR1}, {COLOR2}, {COLOR3});
+    color: white;
+    border-radius: 10px;
+    border: none;
+    font-weight: 700;
+    height: 45px;
+}}
+</style>
+""", unsafe_allow_html=True)
+
+# =========================================================
+# FUNCIONES
+# =========================================================
+def report_card(titulo, desc, img):
+    img_path = ASSETS_DIR / img
+
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+
+    if img_path.exists():
+        st.image(img_path.read_bytes(), use_container_width=True)
+
+    st.markdown(f"""
+        <div class="card-title">
+            {titulo}<br>
+            <span style="font-weight:400;color:#6b7280;font-size:0.9rem;">
+                {desc}
+            </span>
+        </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+def open_panel_button(url):
+    st.markdown(f"""
+    <a href="{url}" target="_blank">
+        <div style="
+            text-align:center;
+            padding:12px;
+            border-radius:10px;
+            font-weight:700;
+            color:white;
+            background: linear-gradient(90deg,{COLOR1},{COLOR2},{COLOR3});
+        ">
+            Abrir Dashboard
+        </div>
+    </a>
+    """, unsafe_allow_html=True)
+
+# =========================================================
+# PORTAL PRINCIPAL
+# =========================================================
+if st.session_state.area is None:
+
+    st.markdown('<div class="main-title">Gerencia de Producción</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title-accent"></div>', unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        report_card("Pollo Carne", "Producción de engorde", "pollo.jpg")
+        if st.button("Ingresar", key="pc"):
+            st.session_state.area = "Pollo Carne"
+            st.rerun()
+
+    with col2:
+        report_card("Reproductoras", "Producción de huevo fértil", "repro.jpg")
+        if st.button("Ingresar", key="rep"):
+            st.session_state.area = "Reproductoras"
+            st.rerun()
+
+    with col3:
+        report_card("Incubación", "Gestión de nacimientos", "incubacion.jpg")
+        if st.button("Ingresar", key="inc"):
+            st.session_state.area = "Incubación"
+            st.rerun()
+
+    col4, col5, _ = st.columns(3)
+
+    with col4:
+        report_card("Cerdos", "Producción porcina", "cerdos.jpg")
+        if st.button("Ingresar", key="cer"):
+            st.session_state.area = "Cerdos"
+            st.rerun()
+
+    with col5:
+        report_card("Planta de Beneficio", "Procesamiento", "beneficio.jpg")
+        if st.button("Ingresar", key="pb"):
+            st.session_state.area = "Planta de Beneficio"
+            st.rerun()
+
+# =========================================================
+# LOGIN
+# =========================================================
+else:
+
+    area = st.session_state.area
+
+    if not st.session_state.auth:
+
+        st.subheader(area)
+        pwd = st.text_input("Contraseña", type="password")
+
+        if st.button("Ingresar"):
+            if pwd == PASSWORDS[area]:
                 st.session_state.auth = True
                 st.rerun()
             else:
-                st.error("PIN Incorrecto")
-    with col_r:
-        if st.button("REGRESAR"):
+                st.error("Contraseña incorrecta")
+
+        if st.button("Volver"):
             st.session_state.area = None
             st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 
-# =============================================================================
-# 7. BLOQUE PRINCIPAL
-# =============================================================================
-def main():
-    local_css()
-    
-    if "area" not in st.session_state: st.session_state.area = None
-    if "auth" not in st.session_state: st.session_state.auth = False
-
-    # A. PANEL DE GERENCIA (CONTRAÍDO)
-    with st.sidebar:
-        st.markdown("### 🛠️ Administración")
-        if st.button("Panel Gerencial"):
-            st.session_state.area = "Gerencia"
-            st.session_state.auth = False
-            st.rerun()
-        st.divider()
-        st.caption("Grupo Don Pollo - Producción 2026")
-
-    # B. VISTA DE SELECCIÓN
-    if st.session_state.area is None:
-        header_component("Ecosistema Producción", "Plataforma de visualización estratégica para la toma de decisiones.")
-        
-        c1, c2, c3 = st.columns(3)
-        with c1: card_component("Reproductoras", "Monitoreo de lotes y huevo fértil.", "Reproductoras.jpg", "b_repro")
-        with c2: card_component("Incubación", "Control de planta y nacimientos.", "Incubacion.jpg", "b_inc")
-        with c3: card_component("Producción Pollo Carne", "Eficiencia alimenticia y logística.", "PolloCarne.jpg", "b_pollo")
-
-    # C. FLUJO DE AUTENTICACIÓN
-    elif not st.session_state.auth:
-        login_screen(st.session_state.area)
-
-    # D. VISTA INTERNA (DASHBOARDS)
     else:
-        current_area = st.session_state.area
-        header_component(current_area, f"Indicadores clave de {current_area}")
-        
-        if st.sidebar.button("⬅ CERRAR SESIÓN"):
+
+        st.markdown(f'<div class="main-title">{area}</div>', unsafe_allow_html=True)
+        st.markdown('<div class="title-accent"></div>', unsafe_allow_html=True)
+
+        if st.button("Cambiar área"):
             st.session_state.area = None
             st.session_state.auth = False
             st.rerun()
 
-        if current_area == "Gerencia":
-            g_c1, g_c2, g_c3 = st.columns(3)
-            with g_c1: card_component("Postura", "Lotes activos", "Reproductoras.jpg", "g1", True, "URL_PBI_1")
-            with g_c2: card_component("Nacimientos", "Eficiencia planta", "Incubacion.jpg", "g2", True, "URL_PBI_2")
-            with g_c3: card_component("Engorde", "FCR / Mortalidad", "PolloCarne.jpg", "g3", True, "URL_PBI_3")
+        st.divider()
 
-if __name__ == "__main__":
-    main()
+        # =========================================================
+        # POLLO CARNE
+        # =========================================================
+        if area == "Pollo Carne":
+            col1, col2, col3 = st.columns(3)
 
-st.markdown("<br><hr><center style='color:#94a3b8; font-size:0.8rem;'>© 2026 GRUPO DON POLLO | GERENCIA DE CONTROL DE GESTIÓN</center>", unsafe_allow_html=True)
+            with col1:
+                report_card("Seguimiento de Lotes Activos", "Control en tiempo real", "lotes.jpg")
+                open_panel_button("URL_AQUI")
+
+            with col2:
+                report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
+                open_panel_button("URL_AQUI")
+
+            with col3:
+                report_card("Faltantes y Sobrantes", "Control de diferencias", "faltantes.jpg")
+                open_panel_button("URL_AQUI")
+
+        # =========================================================
+        # REPRODUCTORAS
+        # =========================================================
+        elif area == "Reproductoras":
+            col1, col2, col3 = st.columns([1,2,1])
+            with col2:
+                report_card("Tablero Reproductoras", "Indicadores clave", "repro.jpg")
+                open_panel_button("URL_AQUI")
+
+        # =========================================================
+        # INCUBACIÓN
+        # =========================================================
+        elif area == "Incubación":
+            col1, col2 = st.columns(2)
+
+            with col1:
+                report_card("Tablero Incubación", "Performance de planta", "incubacion.jpg")
+                open_panel_button("URL_AQUI")
+
+            with col2:
+                report_card("Seguimiento Log Tag", "Trazabilidad", "logtag.jpg")
+                open_panel_button("URL_AQUI")
+
+        # =========================================================
+        # CERDOS
+        # =========================================================
+        elif area == "Cerdos":
+            col1, col2, col3 = st.columns([1,2,1])
+            with col2:
+                report_card("Reporte General", "Producción porcina", "cerdos.jpg")
+                open_panel_button("URL_AQUI")
+
+        # =========================================================
+        # PLANTA DE BENEFICIO
+        # =========================================================
+        elif area == "Planta de Beneficio":
+            col1, col2 = st.columns(2)
+
+            with col1:
+                report_card("Reporte Diario", "Operación diaria", "diario.jpg")
+                open_panel_button("URL_AQUI")
+
+            with col2:
+                report_card("Reporte General", "Visión consolidada", "general.jpg")
+                open_panel_button("URL_AQUI")
+
+# =========================================================
+# FOOTER
+# =========================================================
+st.markdown(
+    "<center style='color:#9ca3af;margin-top:40px;'>Gerencia de Producción • Grupo Don Pollo</center>",
+    unsafe_allow_html=True
+)
