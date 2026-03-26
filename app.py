@@ -6,7 +6,7 @@ from pathlib import Path
 # =========================================================
 st.set_page_config(
     page_title="Gestión Producción • GDP",
-    page_icon="PROD🐔",
+    page_icon="🐔",
     layout="wide"
 )
 
