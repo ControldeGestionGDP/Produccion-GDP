@@ -329,58 +329,120 @@ else:
 
         st.divider()
 
-        # ================= GERENCIA VE TODO =================
+                # ================= GERENCIA VE TODO =================
         if area == "Gerencia":
 
             st.subheader("Pollo Carne")
             col1, col2, col3 = st.columns(3)
             with col1:
-                report_card("Seguimiento de Lotes Activos","Control","lotes.jpg")
-                open_panel_button("URL","g1")
+                report_card("Seguimiento de Lotes Activos", "Control en tiempo real", "lotes.jpg")
+                open_panel_button("URL", "g1")
             with col2:
-                report_card("Pollo Carne","Indicadores","pollo.jpg")
-                open_panel_button("URL","g2")
+                report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
+                open_panel_button("URL", "g2")
             with col3:
-                report_card("Faltantes y Sobrantes","Control","faltantes.jpg")
-                open_panel_button("URL","g3")
+                report_card("Faltantes y Sobrantes", "Control de diferencias", "faltantes.jpg")
+                open_panel_button("URL", "g3")
 
             st.divider()
 
             st.subheader("Reproductoras")
             col1, col2, col3 = st.columns([1,2,1])
             with col2:
-                report_card("Tablero Reproductoras","KPIs","repro.jpg")
-                open_panel_button("URL","g4")
+                report_card("Tablero Reproductoras", "Indicadores clave", "repro.jpg")
+                open_panel_button("URL", "g4")
 
             st.divider()
 
             st.subheader("Incubación")
             col1, col2 = st.columns(2)
             with col1:
-                report_card("Tablero Incubación","Performance","incubacion.jpg")
-                open_panel_button("URL","g5")
+                report_card("Tablero Incubación", "Performance de planta", "incubacion.jpg")
+                open_panel_button("URL", "g5")
             with col2:
-                report_card("Seguimiento Log Tag","Trazabilidad","logtag.jpg")
-                open_panel_button("URL","g6")
+                report_card("Seguimiento Log Tag", "Trazabilidad", "logtag.jpg")
+                open_panel_button("URL", "g6")
 
             st.divider()
 
             st.subheader("Cerdos")
             col1, col2, col3 = st.columns([1,2,1])
             with col2:
-                report_card("Reporte General","Producción","cerdos.jpg")
-                open_panel_button("URL","g7")
+                report_card("Reporte General", "Producción porcina", "cerdos.jpg")
+                open_panel_button("URL", "g7")
 
             st.divider()
 
             st.subheader("Planta de Beneficio")
             col1, col2 = st.columns(2)
             with col1:
-                report_card("Reporte Diario","Operación","diario.jpg")
-                open_panel_button("URL","g8")
+                report_card("Reporte Diario", "Operación diaria", "diario.jpg")
+                open_panel_button("URL", "g8")
             with col2:
-                report_card("Reporte General","Consolidado","general.jpg")
-                open_panel_button("URL","g9")
+                report_card("Reporte General", "Visión consolidada", "general.jpg")
+                open_panel_button("URL", "g9")
+
+        # ================= AREAS NORMALES =================
+
+        elif area == "Pollo Carne":
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                report_card("Seguimiento de Lotes Activos", "Control en tiempo real", "lotes.jpg")
+                open_panel_button("URL", "pc1")
+
+            with col2:
+                report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
+                open_panel_button("URL", "pc2")
+
+            with col3:
+                report_card("Faltantes y Sobrantes", "Control de diferencias", "faltantes.jpg")
+                open_panel_button("URL", "pc3")
+
+
+        elif area == "Reproductoras":
+
+            col1, col2, col3 = st.columns([1,2,1])
+
+            with col2:
+                report_card("Tablero Reproductoras", "Indicadores clave", "repro.jpg")
+                open_panel_button("URL", "rep1")
+
+
+        elif area == "Incubación":
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                report_card("Tablero Incubación", "Performance de planta", "incubacion.jpg")
+                open_panel_button("URL", "inc1")
+
+            with col2:
+                report_card("Seguimiento Log Tag", "Trazabilidad", "logtag.jpg")
+                open_panel_button("URL", "inc2")
+
+
+        elif area == "Cerdos":
+
+            col1, col2, col3 = st.columns([1,2,1])
+
+            with col2:
+                report_card("Reporte General", "Producción porcina", "cerdos.jpg")
+                open_panel_button("URL", "cer1")
+
+
+        elif area == "Planta de Beneficio":
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                report_card("Reporte Diario", "Operación diaria", "diario.jpg")
+                open_panel_button("URL", "pb1")
+
+            with col2:
+                report_card("Reporte General", "Visión consolidada", "general.jpg")
+                open_panel_button("URL", "pb2")
 
 # =========================================================
 # FOOTER
