@@ -336,7 +336,7 @@ else:
             col1, col2, col3 = st.columns(3)
             with col1:
                 report_card("Seguimiento de Lotes Activos", "Control en tiempo real", "lotes.jpg")
-                open_panel_button("URL", "g1")
+                open_panel_button("https://app.powerbi.com/links/g2lIM309oY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=b43e89fd-62e5-4778-aaab-8915d510ba46", "g1")
             with col2:
                 report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
                 open_panel_button("URL", "g2")
@@ -390,7 +390,7 @@ else:
 
             with col1:
                 report_card("Seguimiento de Lotes Activos", "Control en tiempo real", "lotes.jpg")
-                open_panel_button("URL", "pc1")
+                open_panel_button("https://app.powerbi.com/links/g2lIM309oY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=b43e89fd-62e5-4778-aaab-8915d510ba46", "pc1")
 
             with col2:
                 report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
