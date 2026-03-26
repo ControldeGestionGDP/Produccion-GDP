@@ -369,7 +369,7 @@ else:
             col1, col2, col3 = st.columns([1,2,1])
             with col2:
                 report_card("Reporte General", "Producción porcina", "cerdos.jpg")
-                open_panel_button("URL", "g7")
+                open_panel_button("https://app.powerbi.com/links/a_19Nuy4nY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g7")
 
             st.divider()
 
@@ -429,7 +429,7 @@ else:
 
             with col2:
                 report_card("Reporte General", "Producción porcina", "cerdos.jpg")
-                open_panel_button("URL", "cer1")
+                open_panel_button("https://app.powerbi.com/links/a_19Nuy4nY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "cer1")
 
 
         elif area == "Planta de Beneficio":
