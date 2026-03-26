@@ -332,20 +332,6 @@ else:
                 # ================= GERENCIA VE TODO =================
         if area == "Gerencia":
 
-            st.subheader("Pollo Carne")
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                report_card("Seguimiento de Lotes Activos", "Control en tiempo real", "lotes.jpg")
-                open_panel_button("https://app.powerbi.com/links/g2lIM309oY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=b43e89fd-62e5-4778-aaab-8915d510ba46", "g1")
-            with col2:
-                report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
-                open_panel_button("https://app.powerbi.com/links/FlfN0CCJ4H?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g2")
-            with col3:
-                report_card("Faltantes y Sobrantes", "Control de diferencias", "faltantes.jpg")
-                open_panel_button("https://app.powerbi.com/links/IEWsDiPysE?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g3")
-
-            st.divider()
-
             st.subheader("Reproductoras")
             col1, col2, col3 = st.columns([1,2,1])
             with col2:
@@ -362,6 +348,20 @@ else:
             with col2:
                 report_card("Seguimiento Log Tag", "Trazabilidad", "logtag.jpg")
                 open_panel_button("https://app.powerbi.com/links/ZRsbRrhCSk?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g6")
+
+            st.divider()
+
+            st.subheader("Pollo Carne")
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                report_card("Seguimiento de Lotes Activos", "Control en tiempo real", "lotes.jpg")
+                open_panel_button("https://app.powerbi.com/links/g2lIM309oY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=b43e89fd-62e5-4778-aaab-8915d510ba46", "g1")
+            with col2:
+                report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
+                open_panel_button("https://app.powerbi.com/links/FlfN0CCJ4H?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g2")
+            with col3:
+                report_card("Faltantes y Sobrantes", "Control de diferencias", "faltantes.jpg")
+                open_panel_button("https://app.powerbi.com/links/IEWsDiPysE?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g3")
 
             st.divider()
 
