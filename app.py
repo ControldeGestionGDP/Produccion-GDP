@@ -10,9 +10,9 @@ st.set_page_config(
     layout="wide"
 )
 
-COLOR1 = "#1071B8"
-COLOR2 = "#2E3788"
-COLOR3 = "#C4579B"
+COLOR1 = "#8DBF44"
+COLOR2 = "#0D897D"
+COLOR3 = "#129B94"
 
 # =========================================================
 # RUTA BASE
