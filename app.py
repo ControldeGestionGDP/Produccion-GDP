@@ -361,7 +361,7 @@ else:
                 open_panel_button("https://app.powerbi.com/links/FvBE6glv0p?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=eb3a6db3-05d1-4d87-8b75-e55208fa6824", "g5")
             with col2:
                 report_card("Seguimiento Log Tag", "Trazabilidad", "logtag.jpg")
-                open_panel_button("URL", "g6")
+                open_panel_button("https://app.powerbi.com/links/ZRsbRrhCSk?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g6")
 
             st.divider()
 
@@ -420,7 +420,7 @@ else:
 
             with col2:
                 report_card("Seguimiento Log Tag", "Trazabilidad", "logtag.jpg")
-                open_panel_button("URL", "inc2")
+                open_panel_button("https://app.powerbi.com/links/ZRsbRrhCSk?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "inc2")
 
 
         elif area == "Cerdos":
