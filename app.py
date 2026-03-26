@@ -350,7 +350,7 @@ else:
             col1, col2, col3 = st.columns([1,2,1])
             with col2:
                 report_card("Tablero Reproductoras", "Indicadores clave", "repro.jpg")
-                open_panel_button("URL", "g4")
+                open_panel_button("https://app.powerbi.com/links/MTKKKyrmOC?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g4")
 
             st.divider()
 
@@ -407,7 +407,7 @@ else:
 
             with col2:
                 report_card("Tablero Reproductoras", "Indicadores clave", "repro.jpg")
-                open_panel_button("URL", "rep1")
+                open_panel_button("https://app.powerbi.com/links/MTKKKyrmOC?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "rep1")
 
 
         elif area == "Incubación":
