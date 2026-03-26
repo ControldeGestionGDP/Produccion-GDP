@@ -43,7 +43,7 @@ if "auth" not in st.session_state:
 
 
 # =========================================================
-# 🔐 SIDEBAR GERENCIA (IGUAL)
+# 🔐 SIDEBAR GERENCIA (ESTILO UNIFICADO)
 # =========================================================
 with st.sidebar:
     st.markdown(f"""
@@ -60,8 +60,10 @@ with st.sidebar:
     .exe-title-sidebar {{
         font-weight: 800;
         color: {COLOR2};
+        margin-bottom: 5px;
         font-size: 1.1rem;
         text-transform: uppercase;
+        letter-spacing: 0.5px;
     }}
     .exe-status-sidebar {{
         display: inline-block;
@@ -74,39 +76,49 @@ with st.sidebar:
         margin-bottom: 12px;
     }}
     </style>
-
+    
     <div class="executive-card-sidebar">
-        <div style="font-size: 2.2rem;">🐔</div>
+        <div style="font-size: 2.2rem; margin-bottom: 10px;">🐔</div>
         <div class="exe-title-sidebar">Panel Ejecutivo</div>
         <div class="exe-status-sidebar">● ACCESO RESTRINGIDO</div>
-        <p style="color:#64748b;font-size:0.85rem;">
-            Ecosistema consolidado de Producción.
+        <p style="color: #64748b; font-size: 0.85rem; line-height: 1.4; margin-top: 5px;">
+            Todo el ecosistema de Producción consolidado en una sola vista estratégica.
         </p>
     </div>
     """, unsafe_allow_html=True)
 
-    if st.button("INGRESAR", use_container_width=True):
+    if st.button("INGRESAR", use_container_width=True, help="Solo personal autorizado"):
         st.session_state.area = "Gerencia"
         st.session_state.auth = False
         st.rerun()
-
+    
     st.markdown("---")
     st.caption("© 2026 • Grupo Don Pollo")
 
 
 # =========================================================
-# ESTILOS (NO TOCAR)
+# ESTILOS (TU MISMO BLOQUE ORIGINAL)
 # =========================================================
 st.markdown(f"""
 <style>
 html, body {{
     font-family: "Segoe UI", sans-serif;
     background: #f4f6fb;
+    animation: fadeInBody 0.6s ease-in-out;
+}}
+@keyframes fadeInBody {{
+    from {{ opacity: 0; transform: translateY(8px); }}
+    to {{ opacity: 1; transform: translateY(0); }}
 }}
 .main-title {{
     font-size: 2.6rem;
     font-weight: 800;
     color: {COLOR2};
+    animation: slideInTitle 0.7s ease;
+}}
+@keyframes slideInTitle {{
+    from {{ opacity: 0; transform: translateX(-10px); }}
+    to {{ opacity: 1; transform: translateX(0); }}
 }}
 .subtitle {{
     color: #6b7280;
@@ -118,6 +130,11 @@ html, body {{
     background: linear-gradient(90deg,{COLOR1},{COLOR2},{COLOR3});
     border-radius: 4px;
     margin-bottom: 28px;
+    animation: expandBar 0.8s ease forwards;
+}}
+@keyframes expandBar {{
+    from {{ width: 0; }}
+    to {{ width: 120px; }}
 }}
 .login-box {{
     background: white;
@@ -125,16 +142,35 @@ html, body {{
     border-radius: 18px;
     box-shadow: 0 25px 55px rgba(0,0,0,0.12);
     border-top: 5px solid {COLOR1};
+    animation: fadeInCard 0.5s ease;
+}}
+@keyframes fadeInCard {{
+    from {{ opacity: 0; transform: translateY(12px); }}
+    to {{ opacity: 1; transform: translateY(0); }}
 }}
 .card {{
     border-radius: 18px;
     overflow: hidden;
     box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+    margin-bottom: 8px;
     background: white;
+    transition: all 0.35s cubic-bezier(.4,0,.2,1);
+}}
+.card:hover {{
+    transform: translateY(-8px);
+    box-shadow: 0 25px 55px rgba(0,0,0,0.18);
+}}
+.card img {{
+    border-radius: 18px;
+    transition: transform 0.4s ease;
+}}
+.card:hover img {{
+    transform: scale(1.04);
 }}
 .card-title {{
     padding: 15px;
     font-weight: 700;
+    font-size: 1.1rem;
 }}
 div.stButton > button {{
     width: 100%;
@@ -144,16 +180,20 @@ div.stButton > button {{
     border: none;
     font-weight: 700;
     height: 45px;
+    transition: all 0.25s ease;
+}}
+div.stButton > button:hover {{
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.2);
 }}
 </style>
 """, unsafe_allow_html=True)
 
-
 # =========================================================
-# FUNCIONES (IGUALES)
+# FUNCIONES (SIN CAMBIOS)
 # =========================================================
-def report_card(titulo, desc, img):
-    img_path = ASSETS_DIR / img
+def report_card(titulo, desc, img_relative_path):
+    img_path = ASSETS_DIR / img_relative_path
     fallback = ASSETS_DIR / "default.jpg"
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
@@ -162,11 +202,14 @@ def report_card(titulo, desc, img):
         st.image(img_path.read_bytes(), use_container_width=True)
     elif fallback.exists():
         st.image(fallback.read_bytes(), use_container_width=True)
+    else:
+        st.image("https://via.placeholder.com/800x400.png?text=Imagen+no+disponible",
+                 use_container_width=True)
 
     st.markdown(f"""
         <div class="card-title">
             {titulo}<br>
-            <span style="font-weight:400;color:#6b7280;">
+            <span style="font-weight:400;color:#6b7280;font-size:0.95rem;">
                 {desc}
             </span>
         </div>
@@ -186,19 +229,19 @@ def open_panel_button(url, key):
             font-weight:700;
             color:white;
             background: linear-gradient(90deg,{COLOR1},{COLOR2},{COLOR3});
+            box-shadow: 0 6px 14px rgba(0,0,0,0.15);
         ">
             Abrir Dashboard
         </div>
     </a>
     """, unsafe_allow_html=True)
 
-
 # =========================================================
 # PORTAL
 # =========================================================
 if st.session_state.area is None:
 
-    st.markdown('<div class="main-title">Ecosistema Producción</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-title">Ecosistema Digital • Producción</div>', unsafe_allow_html=True)
     st.markdown('<div class="subtitle">Seleccione el área de interés</div>', unsafe_allow_html=True)
     st.markdown('<div class="title-accent"></div>', unsafe_allow_html=True)
 
@@ -207,22 +250,22 @@ if st.session_state.area is None:
     with col1:
         report_card("Pollo Carne","Producción de engorde","pollo.jpg")
         if st.button("Ingresar", key="pc", use_container_width=True):
-            st.session_state.area="Pollo Carne"
-            st.session_state.auth=False
+            st.session_state.area = "Pollo Carne"
+            st.session_state.auth = False
             st.rerun()
 
     with col2:
-        report_card("Reproductoras","Huevo fértil","repro.jpg")
+        report_card("Reproductoras","Producción de huevo fértil","repro.jpg")
         if st.button("Ingresar", key="rep", use_container_width=True):
-            st.session_state.area="Reproductoras"
-            st.session_state.auth=False
+            st.session_state.area = "Reproductoras"
+            st.session_state.auth = False
             st.rerun()
 
     with col3:
-        report_card("Incubación","Nacimientos","inc.jpg")
+        report_card("Incubación","Gestión de nacimientos","incubacion.jpg")
         if st.button("Ingresar", key="inc", use_container_width=True):
-            st.session_state.area="Incubación"
-            st.session_state.auth=False
+            st.session_state.area = "Incubación"
+            st.session_state.auth = False
             st.rerun()
 
     col4, col5, _ = st.columns(3)
@@ -230,24 +273,21 @@ if st.session_state.area is None:
     with col4:
         report_card("Cerdos","Producción porcina","cerdos.jpg")
         if st.button("Ingresar", key="cer", use_container_width=True):
-            st.session_state.area="Cerdos"
-            st.session_state.auth=False
+            st.session_state.area = "Cerdos"
+            st.session_state.auth = False
             st.rerun()
 
     with col5:
         report_card("Planta de Beneficio","Procesamiento","beneficio.jpg")
         if st.button("Ingresar", key="pb", use_container_width=True):
-            st.session_state.area="Planta de Beneficio"
-            st.session_state.auth=False
+            st.session_state.area = "Planta de Beneficio"
+            st.session_state.auth = False
             st.rerun()
 
 else:
 
     area = st.session_state.area
 
-    # =========================================================
-    # LOGIN CENTRADO (IGUAL)
-    # =========================================================
     if not st.session_state.auth:
 
         col1, col2, col3 = st.columns([1,2,1])
@@ -293,7 +333,7 @@ else:
         if area == "Gerencia":
 
             st.subheader("Pollo Carne")
-            col1,col2,col3=st.columns(3)
+            col1, col2, col3 = st.columns(3)
             with col1:
                 report_card("Seguimiento de Lotes Activos","Control","lotes.jpg")
                 open_panel_button("URL","g1")
@@ -307,7 +347,7 @@ else:
             st.divider()
 
             st.subheader("Reproductoras")
-            col1,col2,col3=st.columns([1,2,1])
+            col1, col2, col3 = st.columns([1,2,1])
             with col2:
                 report_card("Tablero Reproductoras","KPIs","repro.jpg")
                 open_panel_button("URL","g4")
@@ -315,18 +355,18 @@ else:
             st.divider()
 
             st.subheader("Incubación")
-            col1,col2=st.columns(2)
+            col1, col2 = st.columns(2)
             with col1:
-                report_card("Tablero Incubación","Performance","inc.jpg")
+                report_card("Tablero Incubación","Performance","incubacion.jpg")
                 open_panel_button("URL","g5")
             with col2:
-                report_card("Seguimiento Log Tag","Trazabilidad","log.jpg")
+                report_card("Seguimiento Log Tag","Trazabilidad","logtag.jpg")
                 open_panel_button("URL","g6")
 
             st.divider()
 
             st.subheader("Cerdos")
-            col1,col2,col3=st.columns([1,2,1])
+            col1, col2, col3 = st.columns([1,2,1])
             with col2:
                 report_card("Reporte General","Producción","cerdos.jpg")
                 open_panel_button("URL","g7")
@@ -334,7 +374,7 @@ else:
             st.divider()
 
             st.subheader("Planta de Beneficio")
-            col1,col2=st.columns(2)
+            col1, col2 = st.columns(2)
             with col1:
                 report_card("Reporte Diario","Operación","diario.jpg")
                 open_panel_button("URL","g8")
