@@ -358,7 +358,7 @@ else:
             col1, col2 = st.columns(2)
             with col1:
                 report_card("Tablero Incubación", "Performance de planta", "incubacion.jpg")
-                open_panel_button("URL", "g5")
+                open_panel_button("https://app.powerbi.com/links/FvBE6glv0p?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=eb3a6db3-05d1-4d87-8b75-e55208fa6824", "g5")
             with col2:
                 report_card("Seguimiento Log Tag", "Trazabilidad", "logtag.jpg")
                 open_panel_button("URL", "g6")
@@ -416,7 +416,7 @@ else:
 
             with col1:
                 report_card("Tablero Incubación", "Performance de planta", "incubacion.jpg")
-                open_panel_button("URL", "inc1")
+                open_panel_button("https://app.powerbi.com/links/FvBE6glv0p?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=eb3a6db3-05d1-4d87-8b75-e55208fa6824", "inc1")
 
             with col2:
                 report_card("Seguimiento Log Tag", "Trazabilidad", "logtag.jpg")
