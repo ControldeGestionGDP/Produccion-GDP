@@ -247,21 +247,21 @@ if st.session_state.area is None:
 
     col1, col2, col3 = st.columns(3)
 
-    with col1:
+    with col3:
         report_card("Pollo Carne","Producción de engorde","pollo.jpg")
         if st.button("Ingresar", key="pc", use_container_width=True):
             st.session_state.area = "Pollo Carne"
             st.session_state.auth = False
             st.rerun()
 
-    with col2:
+    with col1:
         report_card("Reproductoras","Producción de huevo fértil","repro.jpg")
         if st.button("Ingresar", key="rep", use_container_width=True):
             st.session_state.area = "Reproductoras"
             st.session_state.auth = False
             st.rerun()
 
-    with col3:
+    with col2:
         report_card("Incubación","Gestión de nacimientos","incubacion.jpg")
         if st.button("Ingresar", key="inc", use_container_width=True):
             st.session_state.area = "Incubación"
