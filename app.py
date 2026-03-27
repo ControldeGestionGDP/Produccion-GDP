@@ -425,7 +425,7 @@ else:
         
         # ================= AREAS NORMALES =================
 
-                elif area == "Pollo Carne":
+        elif area == "Pollo Carne":
 
             # ===== BLOQUE 1 =====
             col1, col2, col3 = st.columns(3)
