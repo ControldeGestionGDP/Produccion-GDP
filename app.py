@@ -30,6 +30,7 @@ PASSWORDS = {
     "Cerdos": "cerdos2026",
     "Planta de Beneficio": "beneficio2026",
     "Gerencia": "gerencia2026"
+    "Comité Operacional": "comite2026",
 }
 
 # =========================================================
@@ -268,7 +269,7 @@ if st.session_state.area is None:
             st.session_state.auth = False
             st.rerun()
 
-    col4, col5, _ = st.columns(3)
+    col4, col5, col6 = st.columns(3)
 
     with col4:
         report_card("Cerdos","Producción porcina","cerdos.jpg")
@@ -283,6 +284,13 @@ if st.session_state.area is None:
             st.session_state.area = "Planta de Beneficio"
             st.session_state.auth = False
             st.rerun()
+
+    with col6:
+    report_card("Comité Operacional","Seguimiento estratégico","comite.jpg")
+    if st.button("Ingresar", key="comite", use_container_width=True):
+        st.session_state.area = "Comité Operacional"
+        st.session_state.auth = False
+        st.rerun()
 
 else:
 
@@ -382,6 +390,15 @@ else:
                 report_card("Reporte General", "Visión consolidada", "general.jpg")
                 open_panel_button("https://app.powerbi.com/links/qBUR10mRm3?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g9")
 
+            st.subheader("Comité Operacional")
+            col1, col2 = st.columns(2)
+            with col1:
+                report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
+                open_panel_button("https://app.powerbi.com/links/FlfN0CCJ4H?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "gc1")
+            with col2:
+                report_card("Incubación", "Performance de planta", "incubacion.jpg")
+                open_panel_button("https://app.powerbi.com/links/FvBE6glv0p?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=eb3a6db3-05d1-4d87-8b75-e55208fa6824", "gc2")
+
         # ================= AREAS NORMALES =================
 
         elif area == "Pollo Carne":
@@ -443,6 +460,21 @@ else:
             with col2:
                 report_card("Reporte General", "Visión consolidada", "general.jpg")
                 open_panel_button("https://app.powerbi.com/links/qBUR10mRm3?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "pb2")
+
+        
+        elif area == "Comité Operacional":
+
+            st.subheader("Pollo Carne e Incubación")
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
+                open_panel_button("https://app.powerbi.com/links/FlfN0CCJ4H?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "co1")
+
+            with col2:
+                report_card("Incubación", "Performance de planta", "incubacion.jpg")
+                open_panel_button("https://app.powerbi.com/links/FvBE6glv0p?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=eb3a6db3-05d1-4d87-8b75-e55208fa6824", "co2")
 
 # =========================================================
 # FOOTER
