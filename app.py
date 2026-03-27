@@ -29,7 +29,7 @@ PASSWORDS = {
     "Incubación": "incuba2026",
     "Cerdos": "cerdos2026",
     "Planta de Beneficio": "beneficio2026",
-    "Gerencia": "gerencia2026"
+    "Gerencia": "gerencia2026",
     "Comité Operacional": "comite2026",
 }
 
