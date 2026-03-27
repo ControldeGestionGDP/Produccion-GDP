@@ -448,15 +448,15 @@ else:
             col1, col2, col3 = st.columns(3)
 
             with col1:
-                report_card("JSA Loreto", "Seguimiento JSA", "jsa.jpg")
+                report_card("JSA Loreto", "Seguimiento JSA", "loreto.jpg")
                 open_panel_button("URL_LORETO", "pc4")
 
             with col2:
-                report_card("JSA Pucallpa", "Seguimiento JSA", "jsa.jpg")
+                report_card("JSA Pucallpa", "Seguimiento JSA", "pucallpa.jpg")
                 open_panel_button("URL_PUCALLPA", "pc5")
 
             with col3:
-                report_card("JSA Calzada", "Seguimiento JSA", "jsa.jpg")
+                report_card("JSA Calzada", "Seguimiento JSA", "calzada.jpg")
                 open_panel_button("URL_CALZADA", "pc6")
 
             st.divider()
@@ -465,7 +465,7 @@ else:
             col1, col2, col3 = st.columns(3)
 
             with col1:
-                report_card("JSA Picota", "Seguimiento JSA", "jsa.jpg")
+                report_card("JSA Picota", "Seguimiento JSA", "picota.jpg")
                 open_panel_button("URL_PICOTA", "pc7")
 
             with col2:
