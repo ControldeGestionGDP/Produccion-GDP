@@ -393,12 +393,13 @@ else:
             st.subheader("Comité Operacional")
             col1, col2 = st.columns(2)
             with col1:
-                report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
-                open_panel_button("https://app.powerbi.com/links/FlfN0CCJ4H?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "gc1")
-            with col2:
                 report_card("Incubación", "Performance de planta", "incubacion.jpg")
-                open_panel_button("https://app.powerbi.com/links/FvBE6glv0p?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=eb3a6db3-05d1-4d87-8b75-e55208fa6824", "gc2")
+                open_panel_button("https://app.powerbi.com/links/i0vEmizvmC?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=51869a31-aa63-4cef-b59d-c7a23e3a9560", "gc1")
 
+            with col2:
+                report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
+                open_panel_button("https://app.powerbi.com/links/gFrq9kBwfI?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "gc2")
+        
         # ================= AREAS NORMALES =================
 
         elif area == "Pollo Carne":
@@ -469,13 +470,14 @@ else:
             col1, col2 = st.columns(2)
 
             with col1:
-                report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
-                open_panel_button("https://app.powerbi.com/links/FlfN0CCJ4H?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "co1")
+                report_card("Incubación", "Performance de planta", "incubacion.jpg")
+                open_panel_button("https://app.powerbi.com/links/i0vEmizvmC?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=51869a31-aa63-4cef-b59d-c7a23e3a9560", "co1")
 
             with col2:
-                report_card("Incubación", "Performance de planta", "incubacion.jpg")
-                open_panel_button("https://app.powerbi.com/links/FvBE6glv0p?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=eb3a6db3-05d1-4d87-8b75-e55208fa6824", "co2")
+                report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
+                open_panel_button("https://app.powerbi.com/links/gFrq9kBwfI?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "co2")
 
+                
 # =========================================================
 # FOOTER
 # =========================================================
