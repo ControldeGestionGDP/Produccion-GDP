@@ -286,11 +286,11 @@ if st.session_state.area is None:
             st.rerun()
 
     with col6:
-    report_card("Comité Operacional","Seguimiento estratégico","comite.jpg")
-    if st.button("Ingresar", key="comite", use_container_width=True):
-        st.session_state.area = "Comité Operacional"
-        st.session_state.auth = False
-        st.rerun()
+        report_card("Comité Operacional","Seguimiento estratégico","comite.jpg")
+        if st.button("Ingresar", key="comite", use_container_width=True):
+            st.session_state.area = "Comité Operacional"
+            st.session_state.auth = False
+            st.rerun()
 
 else:
 
