@@ -359,7 +359,9 @@ else:
 
             st.divider()
 
+            # ================= POLLO CARNE =================
             st.subheader("Pollo Carne")
+
             col1, col2, col3 = st.columns(3)
             with col1:
                 report_card("Seguimiento de Lotes Activos", "Control en tiempo real", "lotes.jpg")
@@ -370,6 +372,27 @@ else:
             with col3:
                 report_card("Faltantes y Sobrantes", "Control de diferencias", "faltantes.jpg")
                 open_panel_button("https://app.powerbi.com/links/IEWsDiPysE?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g3")
+
+            # ===== JSA =====
+            st.divider()
+
+            col4, col5, col6 = st.columns(3)
+            with col4:
+                report_card("JSA Loreto", "Indicadores JSA", "loreto.jpg")
+                open_panel_button("LINK_LORETO", "g10")
+            with col5:
+                report_card("JSA Pucallpa", "Indicadores JSA", "pucallpa.jpg")
+                open_panel_button("LINK_PUCALLPA", "g11")
+            with col6:
+                report_card("JSA Calzada", "Indicadores JSA", "calzada.jpg")
+                open_panel_button("LINK_CALZADA", "g12")
+
+            st.divider()
+
+            col7, col8, col9 = st.columns([1,2,1])
+            with col8:
+                report_card("JSA Picota", "Indicadores JSA", "picota.jpg")
+                open_panel_button("LINK_PICOTA", "g13")
 
             st.divider()
 
@@ -402,8 +425,9 @@ else:
         
         # ================= AREAS NORMALES =================
 
-        elif area == "Pollo Carne":
+                elif area == "Pollo Carne":
 
+            # ===== BLOQUE 1 =====
             col1, col2, col3 = st.columns(3)
 
             with col1:
@@ -417,6 +441,38 @@ else:
             with col3:
                 report_card("Faltantes y Sobrantes", "Control de diferencias", "faltantes.jpg")
                 open_panel_button("https://app.powerbi.com/links/IEWsDiPysE?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "pc3")
+
+            st.divider()
+
+            # ===== BLOQUE 2 =====
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                report_card("JSA Loreto", "Seguimiento JSA", "jsa.jpg")
+                open_panel_button("URL_LORETO", "pc4")
+
+            with col2:
+                report_card("JSA Pucallpa", "Seguimiento JSA", "jsa.jpg")
+                open_panel_button("URL_PUCALLPA", "pc5")
+
+            with col3:
+                report_card("JSA Calzada", "Seguimiento JSA", "jsa.jpg")
+                open_panel_button("URL_CALZADA", "pc6")
+
+            st.divider()
+
+            # ===== BLOQUE 3 =====
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                report_card("JSA Picota", "Seguimiento JSA", "jsa.jpg")
+                open_panel_button("URL_PICOTA", "pc7")
+
+            with col2:
+                st.empty()
+
+            with col3:
+                st.empty()
 
 
         elif area == "Reproductoras":
@@ -476,7 +532,6 @@ else:
             with col2:
                 report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
                 open_panel_button("https://app.powerbi.com/links/gFrq9kBwfI?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "co2")
-
                 
 # =========================================================
 # FOOTER
