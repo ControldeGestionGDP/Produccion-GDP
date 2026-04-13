@@ -400,7 +400,7 @@ else:
             col1, col2, col3 = st.columns([1,2,1])
             with col2:
                 report_card("Reporte General", "Producción porcina", "cerdos.jpg")
-                open_panel_button("https://app.powerbi.com/links/a_19Nuy4nY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g7")
+                open_panel_button("https://app.powerbi.com/links/a_19Nuy4nY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=a90f008c-b27a-4034-b71c-2214e8f7c251", "g7")
 
             st.divider()
 
@@ -503,7 +503,7 @@ else:
 
             with col2:
                 report_card("Reporte General", "Producción porcina", "cerdos.jpg")
-                open_panel_button("https://app.powerbi.com/links/a_19Nuy4nY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "cer1")
+                open_panel_button("https://app.powerbi.com/links/a_19Nuy4nY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=a90f008c-b27a-4034-b71c-2214e8f7c251", "cer1")
 
 
         elif area == "Planta de Beneficio":
