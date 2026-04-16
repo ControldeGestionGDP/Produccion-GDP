@@ -540,11 +540,11 @@ else:
 
             with col1:
                 report_card("Planeamiento", "Proyección y control", "planeamiento.jpg")
-                open_panel_button("AQUI_TU_LINK", "co3")
+                open_panel_button("https://app.powerbi.com/links/EWURfVV_Ae?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "co3")
 
             with col2:
-                report_card("Resultados Generales PAB", "Visión consolidada PAB", "pab.jpg")
-                open_panel_button("AQUI_TU_LINK", "co4")
+                report_card("Resultados Generales - PAB", "Visión consolidada y PAB", "pab.jpg")
+                open_panel_button("https://app.powerbi.com/links/kMBXBLnFJs?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "co4")
                 
 # =========================================================
 # FOOTER
