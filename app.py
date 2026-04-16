@@ -523,6 +523,7 @@ else:
 
             st.subheader("Pollo Carne e Incubación")
 
+            # BLOQUE 1
             col1, col2 = st.columns(2)
 
             with col1:
@@ -532,6 +533,18 @@ else:
             with col2:
                 report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
                 open_panel_button("https://app.powerbi.com/links/gFrq9kBwfI?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "co2")
+            st.divider()
+
+            # BLOQUE 2
+            col1, col2 = st.columns(2)
+
+            with col1:
+                report_card("Planeamiento", "Proyección y control", "planeamiento.jpg")
+                open_panel_button("AQUI_TU_LINK", "co3")
+
+            with col2:
+                report_card("Resultados Generales PAB", "Visión consolidada PAB", "pab.jpg")
+                open_panel_button("AQUI_TU_LINK", "co4")
                 
 # =========================================================
 # FOOTER
