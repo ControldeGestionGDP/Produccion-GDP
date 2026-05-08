@@ -414,15 +414,41 @@ else:
                 open_panel_button("https://app.powerbi.com/links/qBUR10mRm3?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g9")
 
             st.subheader("Comité Operacional")
+            # BLOQUE 1
             col1, col2 = st.columns(2)
+
             with col1:
                 report_card("Incubación", "Performance de planta", "incubacion.jpg")
-                open_panel_button("https://app.powerbi.com/links/i0vEmizvmC?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=51869a31-aa63-4cef-b59d-c7a23e3a9560", "gc1")
+                open_panel_button(
+                    "https://app.powerbi.com/links/i0vEmizvmC?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=51869a31-aa63-4cef-b59d-c7a23e3a9560",
+                    "gc1"
+                )
 
             with col2:
                 report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
-                open_panel_button("https://app.powerbi.com/links/gFrq9kBwfI?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "gc2")
-        
+                open_panel_button(
+                    "https://app.powerbi.com/links/gFrq9kBwfI?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare",
+                    "gc2"
+                )
+
+            st.divider()
+
+            # BLOQUE 2
+            col1, col2 = st.columns(2)
+
+            with col1:
+                report_card("Planeamiento", "Proyección y control", "planeamiento.jpg")
+                open_panel_button(
+                    "https://app.powerbi.com/links/EWURfVV_Ae?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare",
+                    "gc3"
+                )
+
+            with col2:
+                report_card("Resultados Generales - PAB", "Visión consolidada y PAB", "pab.jpg")
+                open_panel_button(
+                    "https://app.powerbi.com/links/kMBXBLnFJs?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare",
+                    "gc4"
+                )
         # ================= AREAS NORMALES =================
 
         elif area == "Pollo Carne":
