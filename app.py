@@ -389,11 +389,25 @@ else:
 
             st.divider()
 
-            col7, col8, col9 = st.columns([1,2,1])
+            col7, col8, col9 = st.columns(3)
+
+            with col7:
+                st.empty()
+            
             with col8:
                 report_card("JSA Picota", "Indicadores JSA", "picota.jpg")
-                open_panel_button("https://app.powerbi.com/links/MqnHkulYmd?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g13")
+                open_panel_button(
+                    "https://app.powerbi.com/links/MqnHkulYmd?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare",
+                    "g13"
+                )
             
+            with col9:
+                report_card("Análisis Ombligo y Tarso", "Pollo Bebé", "ombligo_tarso.jpg")
+                open_panel_button(
+                    "https://app.powerbi.com/links/zuRKkFX2eS?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=b12eb673-757b-4d68-a842-43d8098e93c4",
+                    "g14"
+                )
+          
             st.divider()
 
             st.subheader("Cerdos")
