@@ -495,7 +495,8 @@ else:
                 open_panel_button("https://app.powerbi.com/links/MqnHkulYmd?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "pc7")
 
             with col2:
-                st.empty()
+                report_card("Análisis Ombligo y Tarso", "Pollo Bebé", "ombligo_tarso.jpg")
+                open_panel_button("https://app.powerbi.com/links/zuRKkFX2eS?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=b12eb673-757b-4d68-a842-43d8098e93c4", "pc8")
 
             with col3:
                 st.empty()
