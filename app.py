@@ -549,10 +549,16 @@ else:
             st.divider()
 
             st.subheader("Cerdos")
-            col1, col2, col3 = st.columns([1,2,1])
-            with col2:
+            col1, col2, col3 = st.columns(3)
+            with col1:
                 report_card("Reporte General", "Producción porcina", "cerdos.jpg")
                 open_panel_button("https://app.powerbi.com/links/a_19Nuy4nY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=a90f008c-b27a-4034-b71c-2214e8f7c251", "g7")
+            with col2:
+                report_card("Evaluacion de Nacimientos", "Control de nacimientos", "cerdos.jpg")
+                open_panel_button("https://app.powerbi.com/links/hEx6l1PkFt?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g_cer_nac")
+            with col3:
+                report_card("Litter Scatter", "Analítica de camadas", "cerdos.jpg")
+                open_panel_button("https://app.powerbi.com/links/uc_hQHv1GM?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g_cer_lit")
 
             st.divider()
 
@@ -681,11 +687,19 @@ else:
 
         elif area == "Cerdos":
 
-            col1, col2, col3 = st.columns([1,2,1])
+            col1, col2, col3 = st.columns(3)
 
-            with col2:
+            with col1:
                 report_card("Reporte General", "Producción porcina", "cerdos.jpg")
                 open_panel_button("https://app.powerbi.com/links/a_19Nuy4nY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=a90f008c-b27a-4034-b71c-2214e8f7c251", "cer1")
+
+            with col2:
+                report_card("Evaluacion de Nacimientos", "Control de nacimientos", "cerdos.jpg")
+                open_panel_button("https://app.powerbi.com/links/hEx6l1PkFt?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "cer2")
+
+            with col3:
+                report_card("Litter Scatter", "Analítica de camadas", "cerdos.jpg")
+                open_panel_button("https://app.powerbi.com/links/uc_hQHv1GM?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "cer3")
 
 
         elif area == "Planta de Beneficio":
