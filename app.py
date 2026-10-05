@@ -1,773 +1,497 @@
+import base64
+import hmac
+import html
+import io
+from datetime import datetime
 from pathlib import Path
+
 import streamlit as st
 from PIL import Image
 
+try:
+    from zoneinfo import ZoneInfo
+except Exception:  # pragma: no cover
+    ZoneInfo = None
+
 # =========================================================
-# RUTAS DE ARCHIVOS
+# RUTAS Y CONFIGURACIÓN
 # =========================================================
 BASE_DIR = Path(__file__).resolve().parent
 ASSETS_DIR = BASE_DIR / "assets"
 LOGO_PATH = ASSETS_DIR / "logo.png"
 
-# =========================================================
-# CARGAR ICONO/LOGO DE LA EMPRESA
-# =========================================================
-if LOGO_PATH.exists():
-    icon_image = Image.open(LOGO_PATH)
-else:
-    icon_image = "🐔"
+icon_image = Image.open(LOGO_PATH) if LOGO_PATH.exists() else "🐔"
 
-# =========================================================
-# CONFIGURACIÓN DE PÁGINA
-# =========================================================
 st.set_page_config(
     page_title="Gestión Producción • GDP",
     page_icon=icon_image,
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="collapsed",
 )
 
-# Paleta Naranja Corporativa Solicitada
 COLOR1 = "#ed701b"
-
-# URL Por defecto para reportes sin enlace aún
+CTID = "42fc96b3-c018-482d-8ada-cab81720489e"
 URL_PENDIENTE = "https://app.powerbi.com"
 
+
+def pbi(link_id, extra=""):
+    return f"https://app.powerbi.com/links/{link_id}?ctid={CTID}&pbi_source=linkShare{extra}"
+
+
 # =========================================================
-# PASSWORDS
+# CLAVES DE ACCESO
+# Recomendado: definirlas en .streamlit/secrets.toml (o en los
+# Secrets de Streamlit Cloud) para que no queden en GitHub:
+#   [passwords]
+#   "Administración de Personal" = "..."
 # =========================================================
-PASSWORDS = {
+PASSWORDS_DEFAULT = {
     "Pollo Carne": "pollo2026",
     "Reproductoras": "repro2026",
     "Incubación": "incuba2026",
     "Cerdos": "cerdos2026",
     "Planta de Beneficio": "beneficio2026",
-    "Gerencia": "gerencia2026",
     "Comité Operacional": "comite2026",
+    "Gerencia": "gerencia2026",
 }
+
+
+def get_passwords():
+    try:
+        return {**PASSWORDS_DEFAULT, **dict(st.secrets["passwords"])}
+    except Exception:
+        return PASSWORDS_DEFAULT
+
+
+PASSWORDS = get_passwords()
+
+# =========================================================
+# CATÁLOGO DE REPORTES (única fuente de verdad)
+# Gerencia ve automáticamente TODOS los reportes de la lista
+# =========================================================
+AREAS = {
+    "Reproductoras": ("Producción de huevo fértil", "repro.jpg"),
+    "Incubación": ("Gestión de nacimientos", "incubacion.jpg"),
+    "Pollo Carne": ("Producción de engorde", "pollo.jpg"),
+    "Cerdos": ("Producción porcina", "cerdos.jpg"),
+    "Planta de Beneficio": ("Procesamiento", "beneficio.jpg"),
+    "Comité Operacional": ("Seguimiento estratégico", "comite.jpg"),
+}
+
+REP, INC, PC, CER, PB, CO = list(AREAS)
+GER = "Gerencia"
+
+REPORTES = [
+    # ---- Reproductoras ----
+    dict(area=REP, title="Tablero Reproductoras", desc="Indicadores clave",
+         img="repro.jpg", url=pbi("MTKKKyrmOC")),
+    # ---- Incubación ----
+    dict(area=INC, title="Tablero Incubación", desc="Performance de planta",
+         img="incubacion.jpg",
+         url=pbi("FvBE6glv0p", "&bookmarkGuid=eb3a6db3-05d1-4d87-8b75-e55208fa6824")),
+    dict(area=INC, title="Seguimiento Log Tag", desc="Trazabilidad",
+         img="logtag.jpg", url=pbi("ZRsbRrhCSk")),
+    # ---- Pollo Carne ----
+    dict(area=PC, title="Seguimiento de Lotes Activos", desc="Control en tiempo real",
+         img="lotes.jpg",
+         url=pbi("g2lIM309oY", "&bookmarkGuid=b43e89fd-62e5-4778-aaab-8915d510ba46")),
+    dict(area=PC, title="Pollo Carne", desc="Indicadores productivos",
+         img="pollo.jpg", url=pbi("FlfN0CCJ4H")),
+    dict(area=PC, title="Faltantes y Sobrantes", desc="Control de diferencias",
+         img="faltantes.jpg", url=pbi("IEWsDiPysE")),
+    dict(area=PC, title="JSA Loreto", desc="Seguimiento JSA",
+         img="loreto.jpg", url=pbi("X0jy7jd1vs")),
+    dict(area=PC, title="JSA Pucallpa", desc="Seguimiento JSA",
+         img="pucallpa.jpg", url=pbi("2uz6wNBWep")),
+    dict(area=PC, title="JSA Calzada", desc="Seguimiento JSA",
+         img="calzada.jpg", url=pbi("-0gJXo1gss")),
+    dict(area=PC, title="JSA Picota", desc="Seguimiento JSA",
+         img="picota.jpg", url=pbi("MqnHkulYmd")),
+    dict(area=PC, title="Análisis Ombligo y Tarso", desc="Pollo Bebé",
+         img="ombligo_tarso.jpg",
+         url=pbi("zuRKkFX2eS", "&bookmarkGuid=b12eb673-757b-4d68-a842-43d8098e93c4")),
+    # ---- Cerdos ----
+    dict(area=CER, title="Reporte General", desc="Producción porcina",
+         img="cerdos.jpg",
+         url=pbi("a_19Nuy4nY", "&bookmarkGuid=a90f008c-b27a-4034-b71c-2214e8f7c251")),
+    dict(area=CER, title="Evaluacion de Nacimientos", desc="Control de nacimientos",
+         img="cerdosnacimiento.jpg", url=pbi("hEx6l1PkFt")),
+    dict(area=CER, title="Litter Scatter", desc="Analítica de camadas",
+         img="litterscatter.jpg", url=pbi("uc_hQHv1GM")),
+    # ---- Planta de Beneficio ----
+    dict(area=PB, title="Reporte Diario", desc="Operación diaria",
+         img="diario.jpg",
+         url=pbi("VlI_Pqq3rS", "&bookmarkGuid=53e6330f-bc0c-4549-b247-0f0a729bb3ec")),
+    dict(area=PB, title="Reporte General", desc="Visión consolidada",
+         img="general.jpg", url=pbi("qBUR10mRm3")),
+    # ---- Comité Operacional ----
+    dict(area=CO, title="Incubación", desc="Performance de planta",
+         img="incubacion.jpg",
+         url=pbi("i0vEmizvmC", "&bookmarkGuid=51869a31-aa63-4cef-b59d-c7a23e3a9560")),
+    dict(area=CO, title="Pollo Carne", desc="Indicadores productivos",
+         img="pollo.jpg", url=pbi("gFrq9kBwfI")),
+    dict(area=CO, title="Planeamiento", desc="Proyección y control",
+         img="planeamiento.jpg", url=pbi("EWURfVV_Ae")),
+    dict(area=CO, title="Resultados Generales - PAB", desc="Visión consolidada y PAB",
+         img="pab.jpg", url=pbi("kMBXBLnFJs")),
+]
 
 # =========================================================
 # SESSION STATE
 # =========================================================
-if "area" not in st.session_state:
-    st.session_state.area = None
-
-if "auth" not in st.session_state:
-    st.session_state.auth = False
+st.session_state.setdefault("area", None)
+st.session_state.setdefault("auth", False)
 
 # =========================================================
-# OCULTAR BARRA LATERAL Y AJUSTAR CONTENEDOR BLANCO
+# ESTILOS
 # =========================================================
-st.markdown("""
-<style>
-[data-testid="stSidebar"], [data-testid="stSidebarCollapseButton"] {
-    display: none !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# =========================================================
-# ESTILOS VISUALES - FONDO BLANCO PURO (ESTILO APP 24)
-# =========================================================
-st.markdown(f"""
+CSS = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+:root{--blue:#ed701b;--blue-d:#d95d0b;--navy:#2a1103;--ink:#0f172a;--mute:#64748b;
+--line:#e2e8f0;--bg:#ffffff;--ok:#12a150;--warn:#d98e04;}
+html,body,[class*="css"]{font-family:'Plus Jakarta Sans',-apple-system,sans-serif !important;}
+.stApp,[data-testid="stAppViewContainer"]{background:var(--bg) !important;}
+[data-testid="stHeader"]{background:transparent !important;}
+[data-testid="stSidebar"],[data-testid="stSidebarCollapseButton"],[data-testid="stToolbar"],
+[data-testid="stDecoration"],#MainMenu,footer{display:none !important;}
+.block-container{max-width:1180px;padding-top:1.4rem !important;}
 
-html, body, [class*="css"] {{
-    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
-}}
+/* ---------- HERO ---------- */
+.hero{position:relative;overflow:hidden;border-radius:28px;padding:44px 48px;margin:10px 0 30px;
+background:linear-gradient(120deg,#2a1103 0%,#7a3308 55%,#ed701b 120%);color:#fff;
+display:flex;justify-content:space-between;align-items:center;gap:24px;
+box-shadow:0 30px 60px -28px rgba(42,17,3,.6);}
+.hero::before{content:"";position:absolute;inset:0;opacity:.35;
+background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),
+linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:44px 44px;
+mask-image:radial-gradient(ellipse at 80% 20%,#000 0%,transparent 70%);}
+.orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55;animation:drift 14s ease-in-out infinite alternate;}
+.o1{width:340px;height:340px;background:#ff9a3c;top:-120px;right:8%;}
+.o2{width:280px;height:280px;background:#d95d0b;bottom:-140px;left:30%;animation-delay:-6s;}
+@keyframes drift{to{transform:translate(-60px,40px) scale(1.15);}}
+.hero-in{position:relative;z-index:1;max-width:720px;}
+.kicker{font-size:.86rem;font-weight:600;color:#ffcfa8;margin-bottom:10px;}
+.hero h1{font-size:2.5rem;line-height:1.12;font-weight:800;letter-spacing:-.035em;margin:0 0 10px;color:#fff;}
+.hero p{font-size:1rem;color:#ffe3cc;margin:0 0 26px;font-weight:500;}
+.stats{display:flex;gap:12px;flex-wrap:wrap;}
+.stat{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);
+border-radius:16px;padding:12px 20px;min-width:118px;}
+.stat b{display:block;font-size:1.65rem;font-weight:800;line-height:1.1;}
+.stat span{font-size:.78rem;color:#ffd9bd;font-weight:600;}
+.hero-logo{position:relative;z-index:1;background:#fff;border-radius:24px;padding:16px;width:120px;height:120px;
+display:flex;align-items:center;justify-content:center;box-shadow:0 20px 40px -12px rgba(0,0,0,.45);flex-shrink:0;}
+.hero-logo img{max-width:100%;max-height:100%;}
 
-/* FONDO COMPLETAMENTE BLANCO */
-.stApp, [data-testid="stHeader"], [data-testid="stAppViewContainer"] {{
-    background-color: #ffffff !important;
-    background-image: none !important;
-}}
+/* ---------- TARJETAS ---------- */
+.rcard{position:relative;display:block;text-decoration:none !important;background:#fff;border:1px solid var(--line);
+border-radius:22px;overflow:hidden;margin-bottom:14px;color:var(--ink) !important;
+box-shadow:0 12px 30px -18px rgba(15,23,42,.14);transition:transform .4s cubic-bezier(.16,1,.3,1),box-shadow .4s,border-color .4s;
+animation:rise .7s cubic-bezier(.16,1,.3,1) both;animation-delay:var(--d,0ms);}
+@keyframes rise{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:none;}}
+.rcard:hover{transform:translateY(-8px);border-color:rgba(237,112,27,.4);box-shadow:0 30px 50px -22px rgba(237,112,27,.4);}
+.media{position:relative;aspect-ratio:16/9;overflow:hidden;background:#7a3308;}
+.rcard .media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+border-radius:0 !important;margin:0;transition:transform .8s cubic-bezier(.16,1,.3,1);}
+.cover{position:absolute;inset:0;z-index:3;border-radius:22px;}
+.tt .t{min-height:2.75em;}.td .d{min-height:2.7em;}
+.media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(42,17,3,.5));}
+.rcard:hover .media img{transform:scale(1.08);}
+.badge{position:absolute;z-index:2;top:14px;left:14px;display:inline-flex;align-items:center;gap:7px;
+padding:5px 12px;border-radius:99px;font-size:.72rem;font-weight:700;background:rgba(255,255,255,.94);
+box-shadow:0 4px 12px rgba(0,0,0,.12);}
+.badge i{width:7px;height:7px;border-radius:50%;background:var(--ok);animation:pulse 1.9s infinite;}
+.badge.wip{color:#8a5a00;}.badge.wip i{background:var(--warn);}
+.badge.live{color:#0b6b38;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(18,161,80,.55);}70%{box-shadow:0 0 0 8px rgba(18,161,80,0);}100%{box-shadow:0 0 0 0 rgba(18,161,80,0);}}
+.body{padding:20px 22px 20px;}
+.t{font-weight:700;font-size:1.05rem;line-height:1.35;}
+.d{color:var(--mute);font-size:.88rem;font-weight:500;margin-top:4px;min-height:2.4em;}
+.go{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;
+border-top:1px solid var(--line);font-weight:700;font-size:.9rem;color:var(--blue);}
+.go svg{transition:transform .35s cubic-bezier(.16,1,.3,1);}
+.rcard:hover .go svg{transform:translateX(6px);}
+.rcard.wide{display:grid;grid-template-columns:1.1fr 1fr;}
+.rcard.wide .media{aspect-ratio:auto;min-height:280px;}
+.rcard.wide .body{display:flex;flex-direction:column;justify-content:center;padding:28px 34px;}
+.rcard.wide .t{font-size:1.45rem;}
 
-.main-title {{
-    font-size: 2.2rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, {COLOR1} 0%, #d95d0b 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
-}}
+/* ---------- BOTONES ---------- */
+.stButton,[data-testid="stButton"],[data-testid="stFormSubmitButton"]{width:100% !important;}
+div.stButton>button,[data-testid="stFormSubmitButton"]>button{display:flex;align-items:center;justify-content:center;}
+div.stButton>button,[data-testid="stFormSubmitButton"]>button{width:100%;height:48px;border:none !important;
+border-radius:14px !important;color:#fff !important;font-weight:700 !important;font-size:.95rem !important;
+background:linear-gradient(135deg,var(--blue),var(--blue-d)) !important;
+box-shadow:0 8px 18px -8px rgba(237,112,27,.6) !important;transition:all .3s cubic-bezier(.16,1,.3,1) !important;}
+div.stButton>button:hover,[data-testid="stFormSubmitButton"]>button:hover{transform:translateY(-2px);
+box-shadow:0 14px 26px -10px rgba(237,112,27,.7) !important;}
+.st-key-btn_open_modal button,.st-key-btn_back button,.st-key-btn_login_volver button{background:#fff !important;
+color:#334155 !important;border:1.5px solid #cbd5e1 !important;border-radius:99px !important;height:42px !important;
+box-shadow:none !important;}
+.st-key-btn_open_modal button:hover,.st-key-btn_back button:hover,.st-key-btn_login_volver button:hover{
+background:#f1f5f9 !important;border-color:#94a3b8 !important;}
 
-.subtitle {{
-    color: #64748b;
-    font-size: 0.98rem;
-    font-weight: 500;
-    margin-top: 4px;
-}}
-
-.title-accent {{
-    height: 4px;
-    width: 80px;
-    background: linear-gradient(90deg, {COLOR1}, #f97316);
-    border-radius: 99px;
-    margin-top: 16px;
-    margin-bottom: 28px;
-    box-shadow: 0 4px 12px rgba(237, 112, 27, 0.2);
-}}
-
-/* TARJETAS ESTÁNDAR */
-.card {{
-    border-radius: 20px;
-    overflow: hidden;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
-    margin-bottom: 12px;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}}
-
-.card:hover {{
-    transform: translateY(-8px) scale(1.01);
-    background: #ffffff;
-    border-color: rgba(237, 112, 27, 0.3);
-    box-shadow: 0 25px 40px -12px rgba(237, 112, 27, 0.18);
-}}
-
-.card img {{
-    border-radius: 20px 20px 0 0;
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}}
-
-.card:hover img {{
-    transform: scale(1.06);
-}}
-
-.card-title {{
-    padding: 20px;
-    font-weight: 700;
-    font-size: 1.05rem;
-    color: #0f172a;
-    line-height: 1.4;
-}}
-
-/* BOTONES GENERALES (NARANJA DE LA MARCA) */
-div.stButton > button {{
-    width: 100%;
-    background: linear-gradient(135deg, {COLOR1} 0%, #d95d0b 100%) !important;
-    color: #ffffff !important;
-    border-radius: 12px !important;
-    border: none !important;
-    font-weight: 700 !important;
-    font-size: 0.95rem !important;
-    letter-spacing: 0.3px !important;
-    height: 48px !important;
-    box-shadow: 0 6px 16px rgba(237, 112, 27, 0.22) !important;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}}
-
-div.stButton > button:hover {{
-    transform: translateY(-2px) !important;
-    box-shadow: 0 12px 25px rgba(237, 112, 27, 0.35) !important;
-    background: linear-gradient(135deg, #d95d0b 0%, #c24e05 100%) !important;
-}}
-
-/* SOBREESCRITURA DIRECTA POR ARIA-LABEL PARA ACCESO GERENCIAL (PLOMO) */
-div.stButton > button[aria-label="Acceso Gerencial"] {{
-    background: #f1f5f9 !important;
-    color: #475569 !important;
-    border: 1.5px solid #cbd5e1 !important;
-    border-radius: 99px !important;
-    height: 42px !important;
-    font-size: 0.88rem !important;
-    font-weight: 700 !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
-}}
-
-div.stButton > button[aria-label="Acceso Gerencial"]:hover {{
-    background: #e2e8f0 !important;
-    color: #0f172a !important;
-    border-color: #94a3b8 !important;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08) !important;
-    transform: translateY(-2px) !important;
-}}
-
-/* SOBREESCRITURA DIRECTA POR ARIA-LABEL PARA CAMBIAR ÁREA */
-div.stButton > button[aria-label="← Cambiar área"] {{
-    background: transparent !important;
-    color: #64748b !important;
-    border: 1.5px solid #cbd5e1 !important;
-    border-radius: 99px !important;
-    height: 40px !important;
-    font-size: 0.85rem !important;
-    font-weight: 600 !important;
-    box-shadow: none !important;
-}}
-
-div.stButton > button[aria-label="← Cambiar área"]:hover {{
-    background: #f1f5f9 !important;
-    color: #0f172a !important;
-    border-color: #94a3b8 !important;
-    transform: translateY(-1px) !important;
-}}
-
-/* ESTILIZACIÓN DEL MODAL */
-div[data-testid="stDialog"] > div {{
-    background: #ffffff !important;
-    border-radius: 28px !important;
-    border: 1px solid rgba(237, 112, 27, 0.15) !important;
-    box-shadow: 0 30px 60px -12px rgba(237, 112, 27, 0.25) !important;
-    padding: 32px !important;
-}}
-
-div[data-testid="stDialog"] header {{
-    background: transparent !important;
-}}
-
-.exe-modal-header {{
-    text-align: center;
-    padding-bottom: 8px;
-}}
-
-.exe-title-modal {{
-    font-weight: 800;
-    color: {COLOR1};
-    font-size: 1.35rem;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-top: 10px;
-    margin-bottom: 6px;
-}}
-
-.exe-badge-modal {{
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 14px;
-    background: rgba(254, 226, 226, 0.85);
-    color: #dc2626;
-    border: 1px solid rgba(252, 165, 165, 0.6);
-    border-radius: 20px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.6px;
-    margin-bottom: 12px;
-}}
-
-.pulse-dot {{
-    width: 6px;
-    height: 6px;
-    background-color: #dc2626;
-    border-radius: 50%;
-    animation: pulse 1.8s infinite;
-}}
-
-@keyframes pulse {{
-    0% {{ transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }}
-    70% {{ transform: scale(1); box-shadow: 0 0 0 8px rgba(220, 38, 38, 0); }}
-    100% {{ transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }}
-}}
-
-div[data-baseweb="input"] {{
-    border-radius: 12px !important;
-    background-color: #f8fafc !important;
-    border: 1.5px solid #e2e8f0 !important;
-}}
+/* ---------- OTROS ---------- */
+[data-testid="stForm"]{border:none !important;padding:0 !important;background:transparent !important;}
+.stTabs [data-baseweb="tab-highlight"]{background:var(--blue) !important;}
+div[data-baseweb="input"]{border-radius:14px !important;background:#fff !important;border:1.5px solid var(--line) !important;}
+div[data-baseweb="input"]:focus-within{border-color:var(--blue) !important;box-shadow:0 0 0 4px rgba(237,112,27,.14);}
+.stTabs [data-baseweb="tab-list"]{gap:6px;border-bottom:1px solid var(--line);}
+.stTabs [data-baseweb="tab"]{font-weight:700;color:var(--mute);padding:10px 18px;}
+.stTabs [aria-selected="true"]{color:var(--blue) !important;}
+.sect{font-weight:800;font-size:1.15rem;margin:22px 0 14px;color:var(--ink);}
+.login-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:34px 30px 18px;text-align:center;
+box-shadow:0 30px 60px -30px rgba(237,112,27,.35);position:relative;overflow:hidden;margin-bottom:14px;}
+.login-card::before{content:"";position:absolute;inset:0 0 auto 0;height:5px;background:linear-gradient(90deg,#2a1103,#ed701b,#ff9a3c);}
+.login-ico{width:58px;height:58px;margin:0 auto 14px;border-radius:18px;background:#fdeee2;color:var(--blue);
+display:flex;align-items:center;justify-content:center;}
+div[data-testid="stDialog"]>div{border-radius:28px !important;}
+@media (max-width:760px){.hero{flex-direction:column;align-items:flex-start;padding:30px 24px;}
+.hero h1{font-size:1.8rem;}.rcard.wide{grid-template-columns:1fr;}.hero-logo{display:none;}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}}
 </style>
-""", unsafe_allow_html=True)
+"""
+st.markdown(CSS, unsafe_allow_html=True)
 
 # =========================================================
-# FUNCIONES AUXILIARES
+# UTILIDADES
 # =========================================================
-def report_card(titulo, desc, img_relative_path):
-    img_path = ASSETS_DIR / img_relative_path
-    fallback = ASSETS_DIR / "default.jpg"
-
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-
-    if img_path.exists():
-        st.image(img_path.read_bytes(), use_container_width=True)
-    elif fallback.exists():
-        st.image(fallback.read_bytes(), use_container_width=True)
-    else:
-        st.image("https://via.placeholder.com/800x400.png?text=Imagen+no+disponible",
-                 use_container_width=True)
-
-    st.markdown(f"""
-        <div class="card-title">
-            {titulo}<br>
-            <span style="font-weight:500;color:#64748b;font-size:0.88rem;display:inline-block;margin-top:4px;">
-                {desc}
-            </span>
-        </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
+ARROW = ('<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" '
+         'stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>')
 
 
-def open_panel_button(url, key):
-    st.markdown(f"""
-    <a href="{url}" target="_blank" style="text-decoration:none;">
-        <div style="
-            width:100%;
-            text-align:center;
-            padding:13px 18px;
-            border-radius:12px;
-            font-weight:700;
-            font-size:0.92rem;
-            color:white;
-            background: linear-gradient(135deg, {COLOR1} 0%, #d95d0b 100%);
-            box-shadow: 0 6px 16px rgba(237, 112, 27, 0.2);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            margin-top: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        " onmouseover="this.style.transform='translateY(-3px)';" onmouseout="this.style.transform='translateY(0)';" >
-            <span>Abrir Dashboard</span>
-            <span style="font-size: 1.1rem;">→</span>
-        </div>
-    </a>
-    """, unsafe_allow_html=True)
+@st.cache_data(show_spinner=False)
+def img_uri(name, width=900):
+    for p in (ASSETS_DIR / name, ASSETS_DIR / "default.jpg"):
+        if p.exists():
+            try:
+                im = Image.open(p).convert("RGB")
+                im.thumbnail((width, width))
+                buf = io.BytesIO()
+                im.save(buf, "JPEG", quality=82, optimize=True)
+                return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+            except Exception:
+                pass
+    return ""
+
+
+@st.cache_data(show_spinner=False)
+def logo_uri():
+    if LOGO_PATH.exists():
+        return "data:image/png;base64," + base64.b64encode(LOGO_PATH.read_bytes()).decode()
+    return ""
+
+
+def saludo():
+    try:
+        now = datetime.now(ZoneInfo("America/Lima"))
+    except Exception:
+        now = datetime.now()
+    s = "Buenos días" if now.hour < 12 else "Buenas tardes" if now.hour < 19 else "Buenas noches"
+    dias = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
+    meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto",
+             "septiembre", "octubre", "noviembre", "diciembre"]
+    return f"{s} · {dias[now.weekday()]} {now.day} de {meses[now.month - 1]} de {now.year}"
+
+
+def hero(kicker, title, sub, stats):
+    chips = "".join(f'<div class="stat"><b>{v}</b><span>{l}</span></div>' for v, l in stats)
+    logo = logo_uri()
+    logo_html = f'<div class="hero-logo"><img src="{logo}" alt="logo"></div>' if logo else ""
+    st.markdown(
+        f'<div class="hero"><div class="orb o1"></div><div class="orb o2"></div>'
+        f'<div class="hero-in"><div class="kicker">{kicker}</div><h1>{title}</h1><p>{sub}</p>'
+        f'<div class="stats">{chips}</div></div>{logo_html}</div>',
+        unsafe_allow_html=True,
+    )
+
+
+def card_html(r, i=0, wide=False, tall=(False, False)):
+    img = img_uri(r["img"])
+    media = f'<img src="{img}" alt="">' if img else ""
+    badge = ('<span class="badge wip"><i></i>En construcción</span>' if r.get("wip")
+             else '<span class="badge live"><i></i>Disponible</span>')
+    cls = "rcard" + (" wide" if wide else "") + (" tt" if tall[0] else "") + (" td" if tall[1] else "")
+    return (f'<div class="{cls}" style="--d:{i * 70}ms"><div class="media">{media}{badge}</div>'
+            f'<div class="body"><div class="t">{r["title"]}</div><div class="d">{r["desc"]}</div>'
+            f'<div class="go"><span>Abrir dashboard</span>{ARROW}</div></div>'
+            f'<a class="cover" href="{html.escape(r["url"])}" target="_blank" rel="noopener" '
+            f'aria-label="Abrir {html.escape(r["title"])}"></a></div>')
+
+
+def grid(items, cols=3):
+    if not items:
+        st.info("No hay reportes que coincidan con tu búsqueda. Prueba con otra palabra o borra el filtro.")
+        return
+    if len(items) == 1:
+        st.markdown(card_html(items[0], 0, wide=True), unsafe_allow_html=True)
+        return
+    for s in range(0, len(items), cols):
+        row = items[s:s + cols]
+        tall = (any(len(r["title"]) > 26 for r in row), any(len(r["desc"]) > 30 for r in row))
+        for c, (j, r) in zip(st.columns(cols), enumerate(row)):
+            with c:
+                st.markdown(card_html(r, s + j, tall=tall), unsafe_allow_html=True)
+
+
+def area_card(name, i):
+    desc, img = AREAS[name]
+    n = sum(1 for r in REPORTES if r["area"] == name)
+    uri = img_uri(img)
+    media = f'<img src="{uri}" alt="">' if uri else ""
+    st.markdown(
+        f'<div class="rcard" style="--d:{i * 90}ms"><div class="media">{media}'
+        f'<span class="badge live"><i></i>{n} dashboard{"s" if n != 1 else ""}</span></div>'
+        f'<div class="body"><div class="t">{name}</div><div class="d">{desc}</div></div></div>',
+        unsafe_allow_html=True,
+    )
+
+
+def go_home():
+    st.session_state.area = None
+    st.session_state.auth = False
+    st.session_state.pop("q", None)
+    st.rerun()
+
+
+def check_pwd(area, pwd):
+    return hmac.compare_digest(pwd.encode(), PASSWORDS[area].encode())
 
 
 # =========================================================
-# MODAL DE ACCESO GERENCIAL
+# MODAL GERENCIA
 # =========================================================
 @st.dialog(" ")
 def modal_gerencia():
-    c1, c2, c3 = st.columns([1, 1.2, 1])
+    st.markdown(
+        '<div style="text-align:center"><div style="font-weight:800;font-size:1.3rem;color:var(--blue);">'
+        'Panel Ejecutivo</div><span class="badge live" style="position:static;display:inline-flex;margin:10px 0;">'
+        '<i></i>Acceso gerencial</span><p style="color:#64748b;font-size:.9rem;">Ingresa tu clave para ver '
+        'el panel consolidado de todas las áreas.</p></div>',
+        unsafe_allow_html=True,
+    )
+    with st.form("form_gerencia"):
+        pwd = st.text_input("Contraseña gerencial", type="password", placeholder="••••••••")
+        if st.form_submit_button("Ingresar al panel", use_container_width=True):
+            if check_pwd(GER, pwd):
+                st.session_state.area, st.session_state.auth = GER, True
+                st.rerun()
+            else:
+                st.error("Clave incorrecta. Verifica e intenta de nuevo.")
+
+
+# =========================================================
+# VISTAS
+# =========================================================
+def portal():
+    total = len(REPORTES)
+    wip = sum(1 for r in REPORTES if r.get("wip"))
+    c1, c2 = st.columns([2.6, 1.4], vertical_alignment="center")
+    with c1:
+        st.markdown('<div style="font-weight:800;color:#0f172a;font-size:1.02rem;">Grupo Don Pollo '
+                    '<span style="color:var(--blue)">•</span> Gerencia de Planeamiento Estratégico</div>',
+                    unsafe_allow_html=True)
     with c2:
-        if LOGO_PATH.exists():
-            st.image(LOGO_PATH.read_bytes(), use_container_width=True)
-        else:
-            st.markdown("<div style='text-align:center;font-size:3rem;'>🐔</div>", unsafe_allow_html=True)
-
-    st.markdown("""
-        <div class="exe-modal-header">
-            <div class="exe-title-modal">Panel Ejecutivo</div>
-            <div class="exe-badge-modal"><span class="pulse-dot"></span> ACCESO GERENCIAL</div>
-            <p style="color: #64748b; font-size: 0.88rem; margin-top: 4px; font-weight: 500;">
-                Ingrese su clave restringida para desplegar el panel consolidado.
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    pwd = st.text_input("Contraseña Gerencial", type="password", placeholder="••••••••", key="modal_pwd_input")
-
-    if st.button("INGRESAR AL PANEL", use_container_width=True, key="btn_confirmar_modal"):
-        if pwd == PASSWORDS["Gerencia"]:
-            st.session_state.area = "Gerencia"
-            st.session_state.auth = True
-            st.rerun()
-        else:
-            st.error("Contraseña incorrecta")
-
-
-# =========================================================
-# PORTAL PRINCIPAL
-# =========================================================
-if st.session_state.area is None:
-
-    # ENCABEZADO TIPO NAVBAR CON BOTÓN ALINEADO
-    nav_col1, nav_col2 = st.columns([3.8, 1.2], vertical_alignment="center")
-    
-    with nav_col1:
-        st.markdown('<div class="main-title">Ecosistema Digital • Producción</div>', unsafe_allow_html=True)
-        st.markdown('<div class="subtitle">Seleccione el área estratégica para desplegar indicadores</div>', unsafe_allow_html=True)
-    
-    with nav_col2:
-        # Botón estilo Pill/Badge plomo
         if st.button("Acceso Gerencial", key="btn_open_modal", use_container_width=True):
             modal_gerencia()
 
-    st.markdown('<div class="title-accent"></div>', unsafe_allow_html=True)
+    stats = [(total - wip, "dashboards disponibles"), (len(AREAS), "áreas estratégicas")]
+    if wip:
+        stats.append((wip, "en construcción"))
+    hero(saludo(), "Ecosistema Digital • Producción",
+         "Todos tus reportes en un solo lugar. Elige un área para ver sus indicadores.", stats)
 
-    # GRILLA DE TARJETAS DE PRODUCCIÓN
-    col1, col2, col3 = st.columns(3)
+    names = list(AREAS)
+    for s in range(0, len(names), 3):
+        for c, (j, name) in zip(st.columns(3), enumerate(names[s:s + 3])):
+            i = s + j
+            with c:
+                area_card(name, i)
+                if st.button("Ingresar", key=f"go_{i}", use_container_width=True):
+                    st.session_state.area, st.session_state.auth = name, False
+                    st.rerun()
 
-    with col1:
-        report_card("Reproductoras", "Producción de huevo fértil", "repro.jpg")
-        if st.button("Ingresar", key="rep", use_container_width=True):
-            st.session_state.area = "Reproductoras"
-            st.session_state.auth = False
-            st.rerun()
 
-    with col2:
-        report_card("Incubación", "Gestión de nacimientos", "incubacion.jpg")
-        if st.button("Ingresar", key="inc", use_container_width=True):
-            st.session_state.area = "Incubación"
-            st.session_state.auth = False
-            st.rerun()
-
-    with col3:
-        report_card("Pollo Carne", "Producción de engorde", "pollo.jpg")
-        if st.button("Ingresar", key="pc", use_container_width=True):
-            st.session_state.area = "Pollo Carne"
-            st.session_state.auth = False
-            st.rerun()
-
-    col4, col5, col6 = st.columns(3)
-
-    with col4:
-        report_card("Cerdos", "Producción porcina", "cerdos.jpg")
-        if st.button("Ingresar", key="cer", use_container_width=True):
-            st.session_state.area = "Cerdos"
-            st.session_state.auth = False
-            st.rerun()
-
-    with col5:
-        report_card("Planta de Beneficio", "Procesamiento", "beneficio.jpg")
-        if st.button("Ingresar", key="pb", use_container_width=True):
-            st.session_state.area = "Planta de Beneficio"
-            st.session_state.auth = False
-            st.rerun()
-
-    with col6:
-        report_card("Comité Operacional", "Seguimiento estratégico", "comite.jpg")
-        if st.button("Ingresar", key="comite", use_container_width=True):
-            st.session_state.area = "Comité Operacional"
-            st.session_state.auth = False
-            st.rerun()
-
-else:
-
-    area = st.session_state.area
-
-    if not st.session_state.auth:
-
-        col1, col2, col3 = st.columns([1,2,1])
-        with col2:
-
-            st.markdown(f"""
-            <div style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); text-align: center;">
-                <div style="font-size:1.5rem;font-weight:800;color:{COLOR1};margin-bottom:8px;">
-                    {area}
-                </div>
-                <div style="color:#64748b;margin-bottom:20px;font-size:0.9rem;">
-                    Ingrese su clave de acceso
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-
+def login(area):
+    _, mid, _ = st.columns([1, 1.3, 1])
+    with mid:
+        st.markdown(
+            f'<div class="login-card"><div class="login-ico"><svg width="26" height="26" viewBox="0 0 24 24" '
+            f'fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'
+            f'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>'
+            f'<div style="font-size:1.4rem;font-weight:800;color:var(--blue);">{area}</div>'
+            f'<div style="color:#64748b;font-size:.9rem;margin:6px 0 4px;">Ingresa tu clave de acceso</div></div>',
+            unsafe_allow_html=True,
+        )
+        with st.form("form_login"):
             pwd = st.text_input("Contraseña", type="password", placeholder="••••••••")
-
-            if st.button("Ingresar", use_container_width=True, key="btn_login_auth"):
-                if pwd == PASSWORDS[area]:
+            if st.form_submit_button("Ingresar", use_container_width=True):
+                if check_pwd(area, pwd):
                     st.session_state.auth = True
                     st.rerun()
                 else:
-                    st.error("Acceso denegado: Contraseña incorrecta")
+                    st.error("Acceso denegado: clave incorrecta.")
+        if st.button("Volver", key="btn_login_volver", use_container_width=True):
+            go_home()
 
-            if st.button("Volver", use_container_width=True, key="btn_login_volver"):
-                st.session_state.area = None
-                st.rerun()
 
+def dashboard(area):
+    ger = area == GER
+    items = REPORTES if ger else [r for r in REPORTES if r["area"] == area]
+
+    back, _ = st.columns([1.4, 4.6])
+    with back:
+        if st.button("← Cambiar área", key="btn_back", use_container_width=True):
+            go_home()
+
+    if ger:
+        hero(saludo(), "Panel Gerencial", "Vista consolidada de Producción: todas las áreas en un solo lugar.",
+             [(len(items), "dashboards"), (len(AREAS), "áreas")])
     else:
-
-        # ENCABEZADO SUPERIOR CON NAVEGACIÓN LIMPIA
-        head_col1, head_col2 = st.columns([3.8, 1.2], vertical_alignment="center")
-        
-        with head_col1:
-            st.markdown(f'<div class="main-title">{area}</div>', unsafe_allow_html=True)
-            st.markdown('<div class="subtitle">Módulos e indicadores disponibles para esta área</div>', unsafe_allow_html=True)
-            
-        with head_col2:
-            if st.button("← Cambiar área", key="btn_cambiar_area", use_container_width=True):
-                st.session_state.area = None
-                st.session_state.auth = False
-                st.rerun()
-
-        st.markdown('<div class="title-accent"></div>', unsafe_allow_html=True)
-
-        # ================= GERENCIA VE TODO =================
-        if area == "Gerencia":
-
-            st.subheader("Reproductoras")
-            col1, col2, col3 = st.columns([1,2,1])
-            with col2:
-                report_card("Tablero Reproductoras", "Indicadores clave", "repro.jpg")
-                open_panel_button("https://app.powerbi.com/links/MTKKKyrmOC?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g4")
-
-            st.divider()
-
-            st.subheader("Incubación")
-            col1, col2 = st.columns(2)
-            with col1:
-                report_card("Tablero Incubación", "Performance de planta", "incubacion.jpg")
-                open_panel_button("https://app.powerbi.com/links/FvBE6glv0p?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=eb3a6db3-05d1-4d87-8b75-e55208fa6824", "g5")
-            with col2:
-                report_card("Seguimiento Log Tag", "Trazabilidad", "logtag.jpg")
-                open_panel_button("https://app.powerbi.com/links/ZRsbRrhCSk?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g6")
-
-            st.divider()
-
-            # ================= POLLO CARNE =================
-            st.subheader("Pollo Carne")
-
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                report_card("Seguimiento de Lotes Activos", "Control en tiempo real", "lotes.jpg")
-                open_panel_button("https://app.powerbi.com/links/g2lIM309oY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=b43e89fd-62e5-4778-aaab-8915d510ba46", "g1")
-            with col2:
-                report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
-                open_panel_button("https://app.powerbi.com/links/FlfN0CCJ4H?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g2")
-            with col3:
-                report_card("Faltantes y Sobrantes", "Control de diferencias", "faltantes.jpg")
-                open_panel_button("https://app.powerbi.com/links/IEWsDiPysE?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g3")
-
-            # ===== JSA =====
-            st.divider()
-
-            col4, col5, col6 = st.columns(3)
-            with col4:
-                report_card("JSA Loreto", "Indicadores JSA", "loreto.jpg")
-                open_panel_button("https://app.powerbi.com/links/X0jy7jd1vs?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g10")
-            with col5:
-                report_card("JSA Pucallpa", "Indicadores JSA", "pucallpa.jpg")
-                open_panel_button("https://app.powerbi.com/links/2uz6wNBWep?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g11")
-            with col6:
-                report_card("JSA Calzada", "Indicadores JSA", "calzada.jpg")
-                open_panel_button("https://app.powerbi.com/links/-0gJXo1gss?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g12")
-
-            st.divider()
-
-            col7, col8, col9 = st.columns(3)
-
-            with col7:
-                st.empty()
-            
-            with col8:
-                report_card("JSA Picota", "Indicadores JSA", "picota.jpg")
-                open_panel_button(
-                    "https://app.powerbi.com/links/MqnHkulYmd?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare",
-                    "g13"
-                )
-            
-            with col9:
-                report_card("Análisis Ombligo y Tarso", "Pollo Bebé", "ombligo_tarso.jpg")
-                open_panel_button(
-                    "https://app.powerbi.com/links/zuRKkFX2eS?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=b12eb673-757b-4d68-a842-43d8098e93c4",
-                    "g14"
-                )
-          
-            st.divider()
-
-            st.subheader("Cerdos")
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                report_card("Reporte General", "Producción porcina", "cerdos.jpg")
-                open_panel_button("https://app.powerbi.com/links/a_19Nuy4nY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=a90f008c-b27a-4034-b71c-2214e8f7c251", "g7")
-            with col2:
-                report_card("Evaluacion de Nacimientos", "Control de nacimientos", "cerdosnacimiento.jpg")
-                open_panel_button("https://app.powerbi.com/links/hEx6l1PkFt?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g_cer_nac")
-            with col3:
-                report_card("Litter Scatter", "Analítica de camadas", "litterscatter.jpg")
-                open_panel_button("https://app.powerbi.com/links/uc_hQHv1GM?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g_cer_lit")
-
-            st.divider()
-
-            st.subheader("Planta de Beneficio")
-            col1, col2 = st.columns(2)
-            with col1:
-                report_card("Reporte Diario", "Operación diaria", "diario.jpg")
-                open_panel_button("https://app.powerbi.com/links/VlI_Pqq3rS?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=53e6330f-bc0c-4549-b247-0f0a729bb3ec", "g8")
-            with col2:
-                report_card("Reporte General", "Visión consolidada", "general.jpg")
-                open_panel_button("https://app.powerbi.com/links/qBUR10mRm3?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "g9")
-
-            st.divider()
-
-            st.subheader("Comité Operacional")
-            # BLOQUE 1
-            col1, col2 = st.columns(2)
-
-            with col1:
-                report_card("Incubación", "Performance de planta", "incubacion.jpg")
-                open_panel_button(
-                    "https://app.powerbi.com/links/i0vEmizvmC?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=51869a31-aa63-4cef-b59d-c7a23e3a9560",
-                    "gc1"
-                )
-
-            with col2:
-                report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
-                open_panel_button(
-                    "https://app.powerbi.com/links/gFrq9kBwfI?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare",
-                    "gc2"
-                )
-
-            st.divider()
-
-            # BLOQUE 2
-            col1, col2 = st.columns(2)
-
-            with col1:
-                report_card("Planeamiento", "Proyección y control", "planeamiento.jpg")
-                open_panel_button(
-                    "https://app.powerbi.com/links/EWURfVV_Ae?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare",
-                    "gc3"
-                )
-
-            with col2:
-                report_card("Resultados Generales - PAB", "Visión consolidada y PAB", "pab.jpg")
-                open_panel_button(
-                    "https://app.powerbi.com/links/kMBXBLnFJs?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare",
-                    "gc4"
-                )
-
-        # ================= AREAS NORMALES =================
-
-        elif area == "Pollo Carne":
-
-            # ===== BLOQUE 1 =====
-            col1, col2, col3 = st.columns(3)
-
-            with col1:
-                report_card("Seguimiento de Lotes Activos", "Control en tiempo real", "lotes.jpg")
-                open_panel_button("https://app.powerbi.com/links/g2lIM309oY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=b43e89fd-62e5-4778-aaab-8915d510ba46", "pc1")
-
-            with col2:
-                report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
-                open_panel_button("https://app.powerbi.com/links/FlfN0CCJ4H?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "pc2")
-
-            with col3:
-                report_card("Faltantes y Sobrantes", "Control de diferencias", "faltantes.jpg")
-                open_panel_button("https://app.powerbi.com/links/IEWsDiPysE?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "pc3")
-
-            st.divider()
-
-            # ===== BLOQUE 2 =====
-            col1, col2, col3 = st.columns(3)
-
-            with col1:
-                report_card("JSA Loreto", "Seguimiento JSA", "loreto.jpg")
-                open_panel_button("https://app.powerbi.com/links/X0jy7jd1vs?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "pc4")
-
-            with col2:
-                report_card("JSA Pucallpa", "Seguimiento JSA", "pucallpa.jpg")
-                open_panel_button("https://app.powerbi.com/links/2uz6wNBWep?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "pc5")
-
-            with col3:
-                report_card("JSA Calzada", "Seguimiento JSA", "calzada.jpg")
-                open_panel_button("https://app.powerbi.com/links/-0gJXo1gss?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "pc6")
-
-            st.divider()
-
-            # ===== BLOQUE 3 =====
-            col1, col2, col3 = st.columns(3)
-
-            with col1:
-                report_card("JSA Picota", "Seguimiento JSA", "picota.jpg")
-                open_panel_button("https://app.powerbi.com/links/MqnHkulYmd?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "pc7")
-
-            with col2:
-                report_card("Análisis Ombligo y Tarso", "Pollo Bebé", "ombligo_tarso.jpg")
-                open_panel_button("https://app.powerbi.com/links/zuRKkFX2eS?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=b12eb673-757b-4d68-a842-43d8098e93c4", "pc8")
-
-            with col3:
-                st.empty()
-
-
-        elif area == "Reproductoras":
-
-            col1, col2, col3 = st.columns([1,2,1])
-
-            with col2:
-                report_card("Tablero Reproductoras", "Indicadores clave", "repro.jpg")
-                open_panel_button("https://app.powerbi.com/links/MTKKKyrmOC?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "rep1")
-
-
-        elif area == "Incubación":
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-                report_card("Tablero Incubación", "Performance de planta", "incubacion.jpg")
-                open_panel_button("https://app.powerbi.com/links/FvBE6glv0p?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=eb3a6db3-05d1-4d87-8b75-e55208fa6824", "inc1")
-
-            with col2:
-                report_card("Seguimiento Log Tag", "Trazabilidad", "logtag.jpg")
-                open_panel_button("https://app.powerbi.com/links/ZRsbRrhCSk?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "inc2")
-
-
-        elif area == "Cerdos":
-
-            col1, col2, col3 = st.columns(3)
-
-            with col1:
-                report_card("Reporte General", "Producción porcina", "cerdos.jpg")
-                open_panel_button("https://app.powerbi.com/links/a_19Nuy4nY?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=a90f008c-b27a-4034-b71c-2214e8f7c251", "cer1")
-
-            with col2:
-                report_card("Evaluacion de Nacimientos", "Control de nacimientos", "cerdosnacimiento.jpg")
-                open_panel_button("https://app.powerbi.com/links/hEx6l1PkFt?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "cer2")
-
-            with col3:
-                report_card("Litter Scatter", "Analítica de camadas", "litterscatter.jpg")
-                open_panel_button("https://app.powerbi.com/links/uc_hQHv1GM?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "cer3")
-
-
-        elif area == "Planta de Beneficio":
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-                report_card("Reporte Diario", "Operación diaria", "diario.jpg")
-                open_panel_button("https://app.powerbi.com/links/VlI_Pqq3rS?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=53e6330f-bc0c-4549-b247-0f0a729bb3ec", "pb1")
-
-            with col2:
-                report_card("Reporte General", "Visión consolidada", "general.jpg")
-                open_panel_button("https://app.powerbi.com/links/qBUR10mRm3?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "pb2")
-
-        
-        elif area == "Comité Operacional":
-
-            st.subheader("Pollo Carne e Incubación")
-
-            # BLOQUE 1
-            col1, col2 = st.columns(2)
-
-            with col1:
-                report_card("Incubación", "Performance de planta", "incubacion.jpg")
-                open_panel_button("https://app.powerbi.com/links/i0vEmizvmC?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare&bookmarkGuid=51869a31-aa63-4cef-b59d-c7a23e3a9560", "co1")
-
-            with col2:
-                report_card("Pollo Carne", "Indicadores productivos", "pollo.jpg")
-                open_panel_button("https://app.powerbi.com/links/gFrq9kBwfI?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "co2")
-            st.divider()
-
-            # BLOQUE 2
-            col1, col2 = st.columns(2)
-
-            with col1:
-                report_card("Planeamiento", "Proyección y control", "planeamiento.jpg")
-                open_panel_button("https://app.powerbi.com/links/EWURfVV_Ae?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "co3")
-
-            with col2:
-                report_card("Resultados Generales - PAB", "Visión consolidada y PAB", "pab.jpg")
-                open_panel_button("https://app.powerbi.com/links/kMBXBLnFJs?ctid=42fc96b3-c018-482d-8ada-cab81720489e&pbi_source=linkShare", "co4")
+        hero(saludo(), area, "Módulos e indicadores disponibles para esta área.", [(len(items), "dashboards")])
+
+    q = st.text_input("Buscar", key="q", placeholder="🔎  Buscar reporte por nombre o tema…",
+                      label_visibility="collapsed").strip().lower()
+
+    def filt(lst):
+        return [r for r in lst if q in f'{r["title"]} {r["desc"]}'.lower()]
+
+    if ger:
+        tabs = st.tabs(["Todas las áreas"] + list(AREAS))
+        with tabs[0]:
+            hubo = False
+            for name in AREAS:
+                lst = filt([r for r in items if r["area"] == name])
+                if lst:
+                    hubo = True
+                    st.markdown(f'<div class="sect">{name}</div>', unsafe_allow_html=True)
+                    grid(lst)
+            if not hubo:
+                grid([])
+        for tab, name in zip(tabs[1:], AREAS):
+            with tab:
+                grid(filt([r for r in items if r["area"] == name]))
+    else:
+        grid(filt(items))
+
+
+# =========================================================
+# ENRUTADOR
+# =========================================================
+if st.session_state.area is None:
+    portal()
+elif not st.session_state.auth:
+    login(st.session_state.area)
+else:
+    dashboard(st.session_state.area)
 
 # =========================================================
 # FOOTER
 # =========================================================
 st.markdown(f"""
-<div style="
-    margin-top: 80px;
-    padding-top: 24px;
-    padding-bottom: 30px;
-    border-top: 1px solid #e2e8f0;
-    text-align: center;
-">
-    <div style="
-        font-size: 0.88rem;
-        font-weight: 700;
-        color: #334155;
-        letter-spacing: 0.3px;
-        margin-bottom: 4px;
-    ">
-        Gerencia de Control de Gestión <span style="color: {COLOR1}; font-weight: 800;">•</span> Grupo Don Pollo
-    </div>
-    <div style="
-        font-size: 0.78rem;
-        color: #94a3b8;
-        font-weight: 500;
-    ">
-        © 2026 Ecosistema Digital de Reportes. Todos los derechos reservados.
-    </div>
+<div style="margin-top:70px;padding:24px 0 30px;border-top:1px solid #e1e8f0;text-align:center;">
+<div style="font-size:.88rem;font-weight:700;color:#334155;margin-bottom:4px;">
+Grupo Don Pollo <span style="color:{COLOR1};font-weight:800;">•</span> Gerencia de Planeamiento Estratégico</div>
+<div style="font-size:.78rem;color:#94a3b8;font-weight:500;">© 2026 Ecosistema Digital de Reportes. Todos los derechos reservados.</div>
 </div>
 """, unsafe_allow_html=True)
