@@ -85,6 +85,10 @@ REPORTES = [
     # ---- Reproductoras ----
     dict(area=REP, title="Tablero Reproductoras", desc="Indicadores clave",
          img="repro.jpg", url=pbi("MTKKKyrmOC")),
+    dict(area=REP, title="Temperatura de Almacén de Huevos", desc="Monitoreo térmico de huevos",
+         img="temp_huevos.jpg", url=pbi("0fi95g4HTJ")),
+    dict(area=REP, title="Temperatura de Vacunas", desc="Monitoreo de conservación",
+         img="temp_vacunas.jpg", url=pbi("fC-cGaZZEX")),
     # ---- Incubación ----
     dict(area=INC, title="Tablero Incubación", desc="Performance de planta",
          img="incubacion.jpg",
