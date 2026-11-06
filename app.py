@@ -91,6 +91,8 @@ REPORTES = [
          url=pbi("FvBE6glv0p", "&bookmarkGuid=eb3a6db3-05d1-4d87-8b75-e55208fa6824")),
     dict(area=INC, title="Seguimiento Log Tag", desc="Trazabilidad",
          img="logtag.jpg", url=pbi("ZRsbRrhCSk")),
+    dict(area=INC, title="Análisis Días de Almacenamiento", desc="Evaluación de almacenamiento de huevos",
+         img="dias_almacenamiento.jpg", url=pbi("tNUMx0BO14")),
     # ---- Pollo Carne ----
     dict(area=PC, title="Seguimiento de Lotes Activos", desc="Control en tiempo real",
          img="lotes.jpg",
