@@ -89,6 +89,8 @@ REPORTES = [
          img="temp_huevos.jpg", url=pbi("0fi95g4HTJ")),
     dict(area=REP, title="Temperatura de Vacunas", desc="Monitoreo de conservación",
          img="temp_vacunas.jpg", url=pbi("fC-cGaZZEX")),
+    dict(area=REP, title="Proyección de Lotes a 65 Semanas", desc="Simulación y escenarios de cierre",
+         img="proyeccion_65_semanas.jpg", url=pbi("emcxo7s7Yy")),
     # ---- Incubación ----
     dict(area=INC, title="Tablero Incubación", desc="Performance de planta",
          img="incubacion.jpg",
