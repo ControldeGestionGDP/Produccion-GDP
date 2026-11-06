@@ -262,7 +262,6 @@ ARROW = ('<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="cu
          'stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>')
 
 
-@st.cache_data(show_spinner=False)
 def img_uri(name, width=900):
     for p in (ASSETS_DIR / name, ASSETS_DIR / "default.jpg"):
         if p.exists():
@@ -440,6 +439,18 @@ def login(area):
 def dashboard(area):
     ger = area == GER
     items = REPORTES if ger else [r for r in REPORTES if r["area"] == area]
+
+    # Diagnóstico visible si falta la fotografía del reporte nuevo.
+    if any(r["img"] == "dias_almacenamiento.jpg" for r in items):
+        foto = ASSETS_DIR / "dias_almacenamiento.jpg"
+        if not foto.is_file():
+            st.warning("No se encontró assets/dias_almacenamiento.jpg en el servidor. Verifica que el archivo esté en la misma rama que app.py.")
+        else:
+            try:
+                with Image.open(foto) as prueba:
+                    prueba.verify()
+            except Exception:
+                st.warning("El archivo assets/dias_almacenamiento.jpg existe, pero no es una imagen válida. Vuelve a subirlo como JPG.")
 
     back, _ = st.columns([1.4, 4.6])
     with back:
