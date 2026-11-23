@@ -102,7 +102,7 @@ REPORTES = [
     # ---- Pollo Carne ----
     dict(area=PC, title="Seguimiento de Lotes Activos", desc="Control en tiempo real",
          img="lotes.jpg",
-         url=pbi("g2lIM309oY", "&bookmarkGuid=b43e89fd-62e5-4778-aaab-8915d510ba46")),
+         url=pbi("g2lIM309oY")),
     dict(area=PC, title="Pollo Carne", desc="Indicadores productivos",
          img="pollo.jpg", url=pbi("FlfN0CCJ4H")),
     dict(area=PC, title="Faltantes y Sobrantes", desc="Control de diferencias",
