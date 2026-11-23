@@ -129,7 +129,7 @@ REPORTES = [
     # ---- Planta de Beneficio ----
     dict(area=PB, title="Reporte Diario", desc="Operación diaria",
          img="diario.jpg",
-         url=pbi("VlI_Pqq3rS", "&bookmarkGuid=53e6330f-bc0c-4549-b247-0f0a729bb3ec")),
+         url=pbi("VlI_Pqq3rS")),
     dict(area=PB, title="Reporte General", desc="Visión consolidada",
          img="general.jpg", url=pbi("qBUR10mRm3")),
     # ---- Comité Operacional ----
